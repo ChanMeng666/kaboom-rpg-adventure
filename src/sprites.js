@@ -385,8 +385,197 @@ export const ANIMATIONS = {
   slashV: { from: 645, to: 648, loop: false, speed: 12 },
 };
 
+// ========== Mi-Casa 资产配置 ==========
+// 角色精灵表 (Itty Bitty 风格)
+export const MI_CASA_CHARS_CONFIG = {
+  path: "./mi-casa/Itty_Bitty_6_Walk_sprites.png",
+  sliceX: 15,
+  sliceY: 8,
+  tileSize: 16,
+};
+
+// Mi-Casa 角色动画配置
+export const MI_CASA_CHAR_ANIMS = {
+  // 主角色 (帧索引基于15x8网格)
+  char1: {
+    "idle-down": 66,
+    "walk-down": { from: 66, to: 68, loop: true, speed: 6 },
+    "idle-side": 96,
+    "walk-side": { from: 96, to: 98, loop: true, speed: 6 },
+    "idle-up": 111,
+    "walk-up": { from: 111, to: 113, loop: true, speed: 6 },
+  },
+  // 其他角色可以根据需要添加
+};
+
+// 室内 Tileset 配置
+export const INTERIOR_TILESETS = {
+  floorsAndWalls: {
+    path: "./mi-casa/TopDownHouse_FloorsAndWalls.png",
+    sliceX: 18,  // 288px / 16px
+    sliceY: 9,   // 144px / 16px
+    tileSize: 16,
+  },
+  doorsAndWindows: {
+    path: "./mi-casa/TopDownHouse_DoorsAndWindows.png",
+    sliceX: 18,  // 288px / 16px
+    sliceY: 10,  // 160px / 16px
+    tileSize: 16,
+  },
+  furnitureState1: {
+    path: "./mi-casa/TopDownHouse_FurnitureState1.png",
+    sliceX: 13,  // 208px / 16px
+    sliceY: 18,  // 288px / 16px
+    tileSize: 16,
+  },
+  furnitureState2: {
+    path: "./mi-casa/TopDownHouse_FurnitureState2.png",
+    sliceX: 13,
+    sliceY: 18,
+    tileSize: 16,
+  },
+  smallItems: {
+    path: "./mi-casa/TopDownHouse_SmallItems.png",
+    sliceX: 13,
+    sliceY: 18,
+    tileSize: 16,
+  },
+  interiorsFree: {
+    path: "./mi-casa/Interiors_free_16x16.png",
+    sliceX: 16,  // 256px / 16px
+    sliceY: 89,  // 1424px / 16px
+    tileSize: 16,
+  },
+};
+
+// ========== Mi-Casa 室内家具索引 ==========
+// FloorsAndWalls tileset 索引
+export const MC_FLOORS = {
+  // 木地板
+  woodLight: { center: 0, variant1: 1, variant2: 2 },
+  woodDark: { center: 18, variant1: 19, variant2: 20 },
+  // 石板地板
+  stone: { center: 36, variant1: 37, variant2: 38 },
+  tile: { center: 54, variant1: 55, variant2: 56 },
+  // 墙壁
+  wallTop: { left: 3, center: 4, right: 5 },
+  wallMid: { left: 21, center: 22, right: 23 },
+  wallBot: { left: 39, center: 40, right: 41 },
+};
+
+// FurnitureState1 tileset 索引
+export const MC_FURNITURE = {
+  // 床
+  bedSingle: { top: 0, bottom: 13 },
+  bedDouble: { topLeft: 1, topRight: 2, bottomLeft: 14, bottomRight: 15 },
+  bedFancy: { topLeft: 3, topRight: 4, bottomLeft: 16, bottomRight: 17 },
+  // 桌子
+  tableSmall: 26,
+  tableMedium: { left: 27, right: 28 },
+  tableLarge: { left: 29, center: 30, right: 31 },
+  tableRound: 39,
+  // 椅子
+  chairFront: 52,
+  chairBack: 53,
+  chairLeft: 54,
+  chairRight: 55,
+  stool: 56,
+  // 柜子
+  cabinetSmall: 65,
+  cabinetTall: { top: 66, bottom: 79 },
+  bookshelf: { top: 67, bottom: 80 },
+  wardrobe: { topLeft: 68, topRight: 69, bottomLeft: 81, bottomRight: 82 },
+  // 沙发
+  sofaLeft: 91,
+  sofaCenter: 92,
+  sofaRight: 93,
+  // 厨房
+  stove: 104,
+  sink: 105,
+  counter: { left: 106, center: 107, right: 108 },
+  // 壁炉
+  fireplaceOff: { topLeft: 117, topRight: 118, bottomLeft: 130, bottomRight: 131 },
+  fireplaceOn: { topLeft: 119, topRight: 120, bottomLeft: 132, bottomRight: 133 },
+  // 浴室
+  bathtub: { left: 143, center: 144, right: 145 },
+  toilet: 156,
+  // 地毯 (3x3)
+  rug: {
+    topLeft: 169, top: 170, topRight: 171,
+    left: 182, center: 183, right: 184,
+    bottomLeft: 195, bottom: 196, bottomRight: 197,
+  },
+  rugSmall: 172,
+  // 植物
+  plantSmall: 208,
+  plantMedium: 209,
+  plantLarge: 210,
+  cactus: 221,
+  // 灯具
+  lampTable: 222,
+  lampFloor: 223,
+  // 装饰
+  clock: 234,
+  mirror: 235,
+  paintingSmall: 236,
+  paintingLarge: { left: 237, right: 238 },
+};
+
+// DoorsAndWindows tileset 索引
+export const MC_DOORS_WINDOWS = {
+  // 门
+  doorClosed: { top: 0, bottom: 18 },
+  doorOpen: { top: 1, bottom: 19 },
+  doorDouble: { topLeft: 2, topRight: 3, bottomLeft: 20, bottomRight: 21 },
+  // 窗户
+  windowSmall: 36,
+  windowLarge: { left: 37, right: 38 },
+  windowRound: 54,
+  // 窗帘
+  curtainOpen: { left: 72, right: 73 },
+  curtainClosed: { left: 90, right: 91 },
+};
+
+// SmallItems tileset 索引
+export const MC_SMALL_ITEMS = {
+  // 厨房物品
+  pot: 0,
+  pan: 1,
+  plate: 2,
+  cup: 3,
+  bowl: 4,
+  // 书籍
+  bookOpen: 13,
+  bookClosed: 14,
+  bookStack: 15,
+  // 瓶子
+  bottleBlue: 26,
+  bottleRed: 27,
+  bottleGreen: 28,
+  // 食物
+  bread: 39,
+  cheese: 40,
+  apple: 41,
+  meat: 42,
+  // 蜡烛
+  candleLit: 52,
+  candleOut: 53,
+  candelabra: 54,
+  // 花瓶
+  vaseEmpty: 65,
+  vaseFlowers: 66,
+  // 箱子
+  crateSmall: 78,
+  crateLarge: 79,
+  barrel: 91,
+  // 宝箱
+  chestClosed: 104,
+  chestOpen: 105,
+};
+
 // ========== 加载所有精灵 ==========
 export async function loadAllSprites() {
+  // 加载主精灵表
   k.loadSprite("spritesheet", SPRITESHEET_CONFIG.path, {
     sliceX: SPRITESHEET_CONFIG.sliceX,
     sliceY: SPRITESHEET_CONFIG.sliceY,
@@ -400,6 +589,81 @@ export async function loadAllSprites() {
   });
 
   console.log("✅ 完整精灵表加载完成 (39×31 = 1209 瓦片)");
+  
+  // 加载 Mi-Casa 资产
+  await loadMiCasaAssets();
+}
+
+// ========== 加载 Mi-Casa 资产 ==========
+export async function loadMiCasaAssets() {
+  // 加载 Mi-Casa 角色精灵表
+  k.loadSprite("mi-casa-chars", MI_CASA_CHARS_CONFIG.path, {
+    sliceX: MI_CASA_CHARS_CONFIG.sliceX,
+    sliceY: MI_CASA_CHARS_CONFIG.sliceY,
+    anims: {
+      // 角色1动画
+      "mc-idle-down": 66,
+      "mc-walk-down": { from: 66, to: 68, loop: true, speed: 6 },
+      "mc-idle-side": 96,
+      "mc-walk-side": { from: 96, to: 98, loop: true, speed: 6 },
+      "mc-idle-up": 111,
+      "mc-walk-up": { from: 111, to: 113, loop: true, speed: 6 },
+      // 角色2 (不同皮肤)
+      "mc2-idle-down": 69,
+      "mc2-walk-down": { from: 69, to: 71, loop: true, speed: 6 },
+    },
+  });
+  console.log("✅ Mi-Casa 角色精灵加载完成");
+
+  // 加载室内 Tileset
+  k.loadSprite("mc-floors-walls", INTERIOR_TILESETS.floorsAndWalls.path, {
+    sliceX: INTERIOR_TILESETS.floorsAndWalls.sliceX,
+    sliceY: INTERIOR_TILESETS.floorsAndWalls.sliceY,
+  });
+
+  k.loadSprite("mc-doors-windows", INTERIOR_TILESETS.doorsAndWindows.path, {
+    sliceX: INTERIOR_TILESETS.doorsAndWindows.sliceX,
+    sliceY: INTERIOR_TILESETS.doorsAndWindows.sliceY,
+  });
+
+  k.loadSprite("mc-furniture1", INTERIOR_TILESETS.furnitureState1.path, {
+    sliceX: INTERIOR_TILESETS.furnitureState1.sliceX,
+    sliceY: INTERIOR_TILESETS.furnitureState1.sliceY,
+  });
+
+  k.loadSprite("mc-furniture2", INTERIOR_TILESETS.furnitureState2.path, {
+    sliceX: INTERIOR_TILESETS.furnitureState2.sliceX,
+    sliceY: INTERIOR_TILESETS.furnitureState2.sliceY,
+  });
+
+  k.loadSprite("mc-small-items", INTERIOR_TILESETS.smallItems.path, {
+    sliceX: INTERIOR_TILESETS.smallItems.sliceX,
+    sliceY: INTERIOR_TILESETS.smallItems.sliceY,
+  });
+
+  k.loadSprite("mc-interiors-free", INTERIOR_TILESETS.interiorsFree.path, {
+    sliceX: INTERIOR_TILESETS.interiorsFree.sliceX,
+    sliceY: INTERIOR_TILESETS.interiorsFree.sliceY,
+  });
+
+  console.log("✅ Mi-Casa 室内 Tileset 加载完成");
+  
+  // 加载字体
+  k.loadFont("monogram", "./mi-casa/monogram.ttf");
+  console.log("✅ Mi-Casa 字体加载完成");
+}
+
+// ========== 加载小游戏资产 ==========
+export async function loadMinigameAssets() {
+  k.loadSprite("rock", "./assets/rock.webp");
+  k.loadSprite("paper", "./assets/paper.webp");
+  k.loadSprite("scissors", "./assets/scissors.webp");
+  k.loadSprite("fish-icon", "./assets/fish.webp");
+  k.loadSprite("tank", "./assets/tank.webp");
+  k.loadSprite("quit-btn", "./assets/quit.webp");
+  k.loadSprite("home-btn", "./assets/home.png");
+  
+  console.log("✅ 小游戏资产加载完成");
 }
 
 // ========== 辅助函数 ==========

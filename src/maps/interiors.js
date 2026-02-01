@@ -1,6 +1,9 @@
 // 室内场景地图数据
 import { TILE_TYPES } from "./tileTypes";
-import { FURNITURE, INTERACTABLES, ITEMS, CHARACTERS } from "../sprites";
+import { 
+  FURNITURE, INTERACTABLES, ITEMS, CHARACTERS,
+  MC_FLOORS, MC_FURNITURE, MC_DOORS_WINDOWS, MC_SMALL_ITEMS
+} from "../sprites";
 
 const W = TILE_TYPES.WOOD; // 木地板
 const S = TILE_TYPES.SAND; // 墙壁
@@ -306,6 +309,307 @@ export const THRONE_ROOM_INTERIOR = {
   ],
 };
 
+// ===== Mi-Casa 风格: 温馨小屋 =====
+// 使用 Mi-Casa tileset 的增强版室内场景
+export const COZY_HOUSE_INTERIOR = {
+  name: "温馨小屋",
+  width: 14,
+  height: 12,
+  spawnPoint: { x: 7, y: 10 },
+  bgColor: "#3a2a1a",
+  useMiCasaTileset: true, // 标记使用 Mi-Casa tileset
+  // 地板和墙壁瓦片 (使用 mc-floors-walls)
+  floorTiles: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,0,0,1,1,1,1,1,1],
+  ],
+  // 墙壁类型: 0=地板, 1=墙壁
+  wallMap: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,0,0,1,1,1,1,1,1],
+  ],
+  // Mi-Casa 风格对象 (使用 mc-furniture1, mc-small-items 等)
+  mcObjects: [
+    // 双人床 (左上角)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 2, frame: MC_FURNITURE.bedDouble.topLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 2, frame: MC_FURNITURE.bedDouble.topRight },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 3, frame: MC_FURNITURE.bedDouble.bottomLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 3, frame: MC_FURNITURE.bedDouble.bottomRight },
+    // 壁炉 (顶部中央)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 1, frame: MC_FURNITURE.fireplaceOn.topLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 1, frame: MC_FURNITURE.fireplaceOn.topRight },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 2, frame: MC_FURNITURE.fireplaceOn.bottomLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 2, frame: MC_FURNITURE.fireplaceOn.bottomRight },
+    // 书柜 (右上角)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 1, frame: MC_FURNITURE.cabinetTall.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 2, frame: MC_FURNITURE.cabinetTall.bottom, solid: true },
+    // 圆桌和椅子 (中央)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 5, frame: MC_FURNITURE.tableRound, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 5, frame: MC_FURNITURE.chairLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 8, y: 5, frame: MC_FURNITURE.chairRight },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 4, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 6, frame: MC_FURNITURE.chairFront },
+    // 沙发 (右侧)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 10, y: 5, frame: MC_FURNITURE.sofaLeft, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 5, frame: MC_FURNITURE.sofaCenter, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 5, frame: MC_FURNITURE.sofaRight, solid: true },
+    // 厨房区域 (左下)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 7, frame: MC_FURNITURE.stove, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 7, frame: MC_FURNITURE.counter.center, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 7, frame: MC_FURNITURE.sink, solid: true },
+    // 地毯 (入口处)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 9, frame: MC_FURNITURE.rug.topLeft, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 9, frame: MC_FURNITURE.rug.top, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 9, frame: MC_FURNITURE.rug.top, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 8, y: 9, frame: MC_FURNITURE.rug.topRight, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 10, frame: MC_FURNITURE.rug.bottomLeft, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 10, frame: MC_FURNITURE.rug.bottom, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 10, frame: MC_FURNITURE.rug.bottom, z: 1 },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 8, y: 10, frame: MC_FURNITURE.rug.bottomRight, z: 1 },
+    // 植物装饰
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 5, frame: MC_FURNITURE.plantLarge },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 8, frame: MC_FURNITURE.plantMedium },
+    // 小物品装饰
+    { type: "mc-item", sprite: "mc-small-items", x: 7, y: 5, frame: MC_SMALL_ITEMS.candleLit, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 3, y: 7, frame: MC_SMALL_ITEMS.pot, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 11, y: 2, frame: MC_SMALL_ITEMS.bookStack, z: 10 },
+  ],
+  // 标准对象 (NPC、出口等)
+  objects: [
+    // 休息点 (床)
+    { type: "save_point", x: 2, y: 2, name: "cozy_bed" },
+    // 出口
+    { type: "exit", x: 6, y: 11, targetArea: "village", targetX: 14, targetY: 12 },
+    { type: "exit", x: 7, y: 11, targetArea: "village", targetX: 14, targetY: 12 },
+  ],
+};
+
+// ===== Mi-Casa 风格: 厨师餐厅 =====
+export const RESTAURANT_INTERIOR = {
+  name: "美味餐厅",
+  width: 16,
+  height: 12,
+  spawnPoint: { x: 8, y: 10 },
+  bgColor: "#2a3a2a",
+  useMiCasaTileset: true,
+  floorTiles: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1],
+  ],
+  wallMap: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1],
+  ],
+  mcObjects: [
+    // 厨房区 (左上角)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 1, frame: MC_FURNITURE.stove, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 1, frame: MC_FURNITURE.stove, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 1, frame: MC_FURNITURE.counter.left, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 1, frame: MC_FURNITURE.counter.center, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 1, frame: MC_FURNITURE.sink, solid: true },
+    // 长餐桌1
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 4, frame: MC_FURNITURE.tableLarge.left, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 4, frame: MC_FURNITURE.tableLarge.center, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 4, frame: MC_FURNITURE.tableLarge.right, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 3, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 3, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 3, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 5, frame: MC_FURNITURE.chairFront },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 5, frame: MC_FURNITURE.chairFront },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 5, frame: MC_FURNITURE.chairFront },
+    // 长餐桌2
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 10, y: 4, frame: MC_FURNITURE.tableLarge.left, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 4, frame: MC_FURNITURE.tableLarge.center, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 4, frame: MC_FURNITURE.tableLarge.right, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 10, y: 3, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 3, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 3, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 10, y: 5, frame: MC_FURNITURE.chairFront },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 5, frame: MC_FURNITURE.chairFront },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 5, frame: MC_FURNITURE.chairFront },
+    // 圆桌
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 8, frame: MC_FURNITURE.tableRound, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 8, frame: MC_FURNITURE.chairLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 8, frame: MC_FURNITURE.chairRight },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 8, frame: MC_FURNITURE.tableRound, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 10, y: 8, frame: MC_FURNITURE.chairLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 8, frame: MC_FURNITURE.chairRight },
+    // 柜台
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 13, y: 1, frame: MC_FURNITURE.cabinetSmall, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 1, frame: MC_FURNITURE.cabinetSmall, solid: true },
+    // 植物
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 9, frame: MC_FURNITURE.plantLarge },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 9, frame: MC_FURNITURE.plantLarge },
+    // 桌上物品
+    { type: "mc-item", sprite: "mc-small-items", x: 4, y: 4, frame: MC_SMALL_ITEMS.candleLit, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 11, y: 4, frame: MC_SMALL_ITEMS.candleLit, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 4, y: 8, frame: MC_SMALL_ITEMS.vaseFlowers, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 11, y: 8, frame: MC_SMALL_ITEMS.vaseFlowers, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 2, y: 1, frame: MC_SMALL_ITEMS.pan, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 3, y: 1, frame: MC_SMALL_ITEMS.pot, z: 10 },
+  ],
+  objects: [
+    // 厨师 NPC
+    { type: "npc", x: 4, y: 2, name: "restaurant_chef", frame: CHARACTERS.innkeeper.down, dialogue: "chef" },
+    // 出口
+    { type: "exit", x: 7, y: 11, targetArea: "village", targetX: 20, targetY: 12 },
+    { type: "exit", x: 8, y: 11, targetArea: "village", targetX: 20, targetY: 12 },
+  ],
+};
+
+// ===== Mi-Casa 风格: 图书馆 =====
+export const LIBRARY_INTERIOR = {
+  name: "知识图书馆",
+  width: 18,
+  height: 14,
+  spawnPoint: { x: 9, y: 12 },
+  bgColor: "#1a2a3a",
+  useMiCasaTileset: true,
+  floorTiles: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],
+  ],
+  wallMap: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],
+  ],
+  mcObjects: [
+    // 左侧书架墙
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    // 右侧书架墙
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 13, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 13, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 15, y: 1, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 15, y: 2, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    // 中央书架排
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 5, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 5, y: 6, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 5, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 6, y: 6, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 5, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 11, y: 6, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 5, frame: MC_FURNITURE.bookshelf.top, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 12, y: 6, frame: MC_FURNITURE.bookshelf.bottom, solid: true },
+    // 阅读桌 (左)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 9, frame: MC_FURNITURE.tableMedium.left, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 9, frame: MC_FURNITURE.tableMedium.right, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 8, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 8, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 3, y: 10, frame: MC_FURNITURE.chairFront },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 4, y: 10, frame: MC_FURNITURE.chairFront },
+    // 阅读桌 (右)
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 13, y: 9, frame: MC_FURNITURE.tableMedium.left, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 9, frame: MC_FURNITURE.tableMedium.right, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 13, y: 8, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 8, frame: MC_FURNITURE.chairBack },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 13, y: 10, frame: MC_FURNITURE.chairFront },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 14, y: 10, frame: MC_FURNITURE.chairFront },
+    // 中央阅读区
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 8, y: 8, frame: MC_FURNITURE.tableRound, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 9, y: 8, frame: MC_FURNITURE.tableRound, solid: true },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 7, y: 8, frame: MC_FURNITURE.chairLeft },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 10, y: 8, frame: MC_FURNITURE.chairRight },
+    // 台灯
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 9, frame: MC_FURNITURE.lampTable },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 15, y: 9, frame: MC_FURNITURE.lampTable },
+    // 植物
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 2, y: 11, frame: MC_FURNITURE.plantLarge },
+    { type: "mc-furniture", sprite: "mc-furniture1", x: 15, y: 11, frame: MC_FURNITURE.plantLarge },
+    // 书籍装饰
+    { type: "mc-item", sprite: "mc-small-items", x: 3, y: 9, frame: MC_SMALL_ITEMS.bookOpen, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 4, y: 9, frame: MC_SMALL_ITEMS.bookStack, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 13, y: 9, frame: MC_SMALL_ITEMS.bookOpen, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 8, y: 8, frame: MC_SMALL_ITEMS.candleLit, z: 10 },
+    { type: "mc-item", sprite: "mc-small-items", x: 9, y: 8, frame: MC_SMALL_ITEMS.bookStack, z: 10 },
+  ],
+  objects: [
+    // 图书管理员 NPC
+    { type: "npc", x: 9, y: 4, name: "librarian", frame: CHARACTERS.elder.down, dialogue: "librarian" },
+    // 宝箱 (隐藏知识)
+    { type: "chest", x: 8, y: 1, name: "library_chest", frame: INTERACTABLES.chest.closed, gold: 200 },
+    // 出口
+    { type: "exit", x: 8, y: 13, targetArea: "castle", targetX: 10, targetY: 15 },
+    { type: "exit", x: 9, y: 13, targetArea: "castle", targetX: 10, targetY: 15 },
+  ],
+};
+
 // 室内场景映射
 export const INTERIOR_MAPS = {
   elder_house: ELDER_HOUSE_INTERIOR,
@@ -313,4 +617,8 @@ export const INTERIOR_MAPS = {
   smithy: SMITHY_INTERIOR,
   inn: INN_INTERIOR,
   throne_room: THRONE_ROOM_INTERIOR,
+  // Mi-Casa 风格室内
+  cozy_house: COZY_HOUSE_INTERIOR,
+  restaurant: RESTAURANT_INTERIOR,
+  library: LIBRARY_INTERIOR,
 };

@@ -6,7 +6,7 @@ import { TILE_FRAMES } from "../maps/index";
 import { gameState } from "../gameState";
 import { createPlayer, setupPlayerControls } from "../player";
 import { setCamScale, showGameUI, updateUI, displayDialogue } from "../utils";
-import { CHARACTERS, SPECIAL_CHARS, INTERACTABLES, FURNITURE } from "../sprites";
+import { CHARACTERS, SPECIAL_CHARS, INTERACTABLES, FURNITURE, MC_FLOORS } from "../sprites";
 import { markChestOpened, isChestOpened, addGold, addExp, healPlayer, saveGame } from "../gameState";
 
 // 当前室内对象
@@ -48,26 +48,32 @@ export function createInteriorScene() {
       "interior-map",
     ]);
     
-    // 渲染地图瓦片
-    for (let y = 0; y < interior.height; y++) {
-      for (let x = 0; x < interior.width; x++) {
-        const tileType = interior.tiles[y][x];
-        const tileFrame = TILE_FRAMES[tileType];
-        
-        mapContainer.add([
-          k.sprite("spritesheet", { frame: tileFrame }),
-          k.pos(x * tileSize, y * tileSize),
-          k.z(0),
-        ]);
-        
-        // 墙壁碰撞
-        if (tileType === 1) { // SAND 用作墙壁
+    // 检查是否使用 Mi-Casa tileset
+    if (interior.useMiCasaTileset) {
+      // 渲染 Mi-Casa 风格地图
+      renderMiCasaMap(mapContainer, interior, tileSize);
+    } else {
+      // 渲染传统风格地图
+      for (let y = 0; y < interior.height; y++) {
+        for (let x = 0; x < interior.width; x++) {
+          const tileType = interior.tiles[y][x];
+          const tileFrame = TILE_FRAMES[tileType];
+          
           mapContainer.add([
-            k.area({ shape: new k.Rect(k.vec2(0), tileSize, tileSize) }),
-            k.body({ isStatic: true }),
+            k.sprite("spritesheet", { frame: tileFrame }),
             k.pos(x * tileSize, y * tileSize),
-            "wall",
+            k.z(0),
           ]);
+          
+          // 墙壁碰撞
+          if (tileType === 1) { // SAND 用作墙壁
+            mapContainer.add([
+              k.area({ shape: new k.Rect(k.vec2(0), tileSize, tileSize) }),
+              k.body({ isStatic: true }),
+              k.pos(x * tileSize, y * tileSize),
+              "wall",
+            ]);
+          }
         }
       }
     }
@@ -81,6 +87,11 @@ export function createInteriorScene() {
     
     // 加载室内对象
     loadInteriorObjects(interior.objects, player, scale, tileSize, objScale, interiorName);
+    
+    // 加载 Mi-Casa 风格对象
+    if (interior.useMiCasaTileset && interior.mcObjects) {
+      loadMiCasaObjects(interior.mcObjects, player, scale, tileSize);
+    }
     
     // 创建边界
     createInteriorBoundaries(interior.width, interior.height, tileSize, scale);
@@ -442,4 +453,102 @@ function exitInterior() {
 // 进入室内场景的入口函数
 export function enterInterior(interiorName, returnArea, returnX, returnY) {
   k.go("interior", interiorName, returnArea, returnX, returnY);
+}
+
+// ========== Mi-Casa 风格渲染函数 ==========
+
+// 渲染 Mi-Casa 风格地图
+function renderMiCasaMap(mapContainer, interior, tileSize) {
+  // 地板/墙壁瓦片映射
+  const floorFrame = MC_FLOORS.woodLight.center; // 木地板
+  const wallFrame = MC_FLOORS.wallMid.center;    // 墙壁
+  
+  for (let y = 0; y < interior.height; y++) {
+    for (let x = 0; x < interior.width; x++) {
+      const isWall = interior.wallMap ? interior.wallMap[y][x] === 1 : interior.floorTiles[y][x] === 1;
+      
+      // 渲染地板或墙壁
+      if (isWall) {
+        // 墙壁 - 根据位置选择不同的墙壁瓦片
+        let frame = wallFrame;
+        
+        // 判断是否是顶部墙
+        if (y === 0) {
+          if (x === 0) frame = MC_FLOORS.wallTop.left;
+          else if (x === interior.width - 1) frame = MC_FLOORS.wallTop.right;
+          else frame = MC_FLOORS.wallTop.center;
+        }
+        // 底部墙
+        else if (y === interior.height - 1) {
+          if (x === 0) frame = MC_FLOORS.wallBot.left;
+          else if (x === interior.width - 1) frame = MC_FLOORS.wallBot.right;
+          else frame = MC_FLOORS.wallBot.center;
+        }
+        // 左右墙
+        else {
+          if (x === 0) frame = MC_FLOORS.wallMid.left;
+          else if (x === interior.width - 1) frame = MC_FLOORS.wallMid.right;
+          else frame = MC_FLOORS.wallMid.center;
+        }
+        
+        mapContainer.add([
+          k.sprite("mc-floors-walls", { frame: frame }),
+          k.pos(x * tileSize, y * tileSize),
+          k.z(0),
+        ]);
+        
+        // 墙壁碰撞
+        mapContainer.add([
+          k.area({ shape: new k.Rect(k.vec2(0), tileSize, tileSize) }),
+          k.body({ isStatic: true }),
+          k.pos(x * tileSize, y * tileSize),
+          "wall",
+        ]);
+      } else {
+        // 地板 - 添加一些变化
+        let frame = floorFrame;
+        // 随机添加地板变体
+        if (Math.random() < 0.1) {
+          frame = MC_FLOORS.woodLight.variant1;
+        } else if (Math.random() < 0.05) {
+          frame = MC_FLOORS.woodLight.variant2;
+        }
+        
+        mapContainer.add([
+          k.sprite("mc-floors-walls", { frame: frame }),
+          k.pos(x * tileSize, y * tileSize),
+          k.z(0),
+        ]);
+      }
+    }
+  }
+}
+
+// 加载 Mi-Casa 风格对象
+function loadMiCasaObjects(mcObjects, player, scale, tileSize) {
+  mcObjects.forEach(obj => {
+    const worldX = obj.x * tileSize * scale;
+    const worldY = obj.y * tileSize * scale;
+    const zIndex = obj.z || 4;
+    
+    // 根据对象类型选择精灵表
+    const spriteName = obj.sprite || "mc-furniture1";
+    
+    const gameObj = k.add([
+      k.sprite(spriteName, { frame: obj.frame }),
+      k.pos(worldX, worldY),
+      k.anchor("center"),
+      k.scale(scale),
+      k.z(zIndex),
+      "mc-object",
+    ]);
+    
+    // 如果对象是实体，添加碰撞
+    if (obj.solid) {
+      gameObj.use(k.area({ shape: new k.Rect(k.vec2(0), tileSize * 0.8, tileSize * 0.8) }));
+      gameObj.use(k.body({ isStatic: true }));
+    }
+    
+    currentInteriorObjects.push(gameObj);
+  });
 }
