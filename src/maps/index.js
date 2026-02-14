@@ -1,18 +1,19 @@
 // 地图管理模块 - 所有区域的地图数据
-import { SAND_TILES, GRASS_TILES, BLUE_TILES, GOLD_TILES, WATER_TILES } from "../sprites";
+import { SAND_TILES, GRASS_TILES, BLUE_TILES, GOLD_TILES } from "../sprites";
 import { TILE_TYPES } from "./tileTypes";
 
 // 重新导出 TILE_TYPES
 export { TILE_TYPES } from "./tileTypes";
 
+// 水面使用 BLUE_TILES (精灵表中无专用水面瓦片，原 WATER_TILES 是彩虹条纹)
 export const TILE_FRAMES = {
-  [TILE_TYPES.GRASS]: GRASS_TILES.center,
-  [TILE_TYPES.SAND]: SAND_TILES.center,
-  [TILE_TYPES.PATH]: GOLD_TILES.center,
-  [TILE_TYPES.WATER_SHALLOW]: WATER_TILES.shallow[0],
-  [TILE_TYPES.WATER_DEEP]: WATER_TILES.deep[0],
-  [TILE_TYPES.BLUE]: BLUE_TILES.center,
-  [TILE_TYPES.WOOD]: SAND_TILES.center,
+  [TILE_TYPES.GRASS]: GRASS_TILES.center,     // 157
+  [TILE_TYPES.SAND]: SAND_TILES.center,       // 40
+  [TILE_TYPES.PATH]: GOLD_TILES.center,       // 67
+  [TILE_TYPES.WATER_SHALLOW]: BLUE_TILES.center, // 163 - 蓝色地面作为浅水
+  [TILE_TYPES.WATER_DEEP]: BLUE_TILES.top,    // 124 - 深色蓝色作为深水
+  [TILE_TYPES.BLUE]: BLUE_TILES.center,       // 163
+  [TILE_TYPES.WOOD]: SAND_TILES.center,       // 40
 };
 
 // 区域传送点定义

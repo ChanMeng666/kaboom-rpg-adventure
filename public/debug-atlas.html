@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Tile Atlas Viewer - Kaboom RPG Adventure</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 20px;
+      background: #1a1a2e; color: #eee;
+      font-family: 'Courier New', monospace;
+    }
+    h1 { color: #ffd700; margin-bottom: 5px; }
+    h2 { color: #87ceeb; margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+    .info { color: #aaa; margin: 5px 0 20px; }
+    .atlas-section { margin-bottom: 40px; }
+    .atlas-container {
+      position: relative; display: inline-block;
+      overflow: auto; max-width: 100%;
+    }
+    .atlas-container canvas {
+      border: 1px solid #555; cursor: crosshair;
+      image-rendering: pixelated;
+    }
+    .tooltip {
+      position: fixed; background: rgba(0,0,0,0.95); color: #ffd700;
+      padding: 8px 14px; border-radius: 4px; font-size: 14px;
+      pointer-events: none; z-index: 1000; border: 1px solid #ffd700;
+      white-space: nowrap;
+    }
+    .panel {
+      position: fixed; top: 20px; right: 20px;
+      background: rgba(0,0,0,0.92); padding: 16px;
+      border: 2px solid #ffd700; border-radius: 8px;
+      min-width: 220px; z-index: 999;
+    }
+    .panel h3 { color: #ffd700; margin: 0 0 8px; }
+    .panel canvas {
+      image-rendering: pixelated;
+      border: 1px solid #555; display: block; margin: 8px 0;
+    }
+    .panel .detail { color: #87ceeb; font-size: 13px; line-height: 1.6; }
+    .zoom-controls { margin: 10px 0; }
+    .zoom-controls button {
+      background: #333; color: #ffd700; border: 1px solid #555;
+      padding: 4px 12px; cursor: pointer; font-family: inherit;
+      border-radius: 3px; margin-right: 4px;
+    }
+    .zoom-controls button:hover { background: #555; }
+    .zoom-controls button.active { background: #ffd700; color: #1a1a2e; }
+    .search-box {
+      margin: 10px 0; display: flex; gap: 8px; align-items: center;
+    }
+    .search-box input {
+      background: #333; color: #ffd700; border: 1px solid #555;
+      padding: 4px 8px; font-family: inherit; font-size: 14px;
+      border-radius: 3px; width: 100px;
+    }
+    .search-box button {
+      background: #333; color: #87ceeb; border: 1px solid #555;
+      padding: 4px 10px; cursor: pointer; font-family: inherit;
+      border-radius: 3px;
+    }
+    .highlight-overlay {
+      position: absolute; border: 3px solid #ff0000;
+      pointer-events: none; z-index: 50;
+      animation: pulse 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <h1>Tile Atlas Viewer</h1>
+  <p class="info">
+    Hover = see frame info | Click = select tile | Use zoom controls per section.
+    <br>Search by frame number to highlight a specific tile.
+  </p>
+
+  <div class="panel" id="panel">
+    <h3>Selected Tile</h3>
+    <canvas id="panelCanvas" width="96" height="96"></canvas>
+    <div class="detail" id="panelDetail">Click a tile to inspect</div>
+    <div class="search-box">
+      <input type="number" id="searchFrame" placeholder="Frame #" min="0">
+      <button onclick="searchFrame()">Find</button>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip" style="display:none;"></div>
+
+  <div id="atlases"></div>
+
+  <script>
+    const tooltip = document.getElementById('tooltip');
+    const panelDetail = document.getElementById('panelDetail');
+    const panelCanvas = document.getElementById('panelCanvas');
+    const panelCtx = panelCanvas.getContext('2d');
+    panelCtx.imageSmoothingEnabled = false;
+
+    // Store all atlas data for search
+    const allAtlases = [];
+
+    const ATLAS_CONFIGS = [
+      {
+        id: 'main', title: 'Main Spritesheet (39x31, 16px tiles)',
+        src: './spritesheet.png', cols: 39, rows: 31, tileSize: 16, defaultZoom: 4
+      },
+      {
+        id: 'floors', title: 'Mi-Casa: Floors & Walls (18x9)',
+        src: './mi-casa/TopDownHouse_FloorsAndWalls.png', cols: 18, rows: 9, tileSize: 16, defaultZoom: 4
+      },
+      {
+        id: 'furniture1', title: 'Mi-Casa: Furniture State 1 (13x18)',
+        src: './mi-casa/TopDownHouse_FurnitureState1.png', cols: 13, rows: 18, tileSize: 16, defaultZoom: 4
+      },
+      {
+        id: 'smallitems', title: 'Mi-Casa: Small Items (13x18)',
+        src: './mi-casa/TopDownHouse_SmallItems.png', cols: 13, rows: 18, tileSize: 16, defaultZoom: 4
+      },
+      {
+        id: 'doors', title: 'Mi-Casa: Doors & Windows (18x10)',
+        src: './mi-casa/TopDownHouse_DoorsAndWindows.png', cols: 18, rows: 10, tileSize: 16, defaultZoom: 4
+      },
+      {
+        id: 'furniture2', title: 'Mi-Casa: Furniture State 2 (13x18)',
+        src: './mi-casa/TopDownHouse_FurnitureState2.png', cols: 13, rows: 18, tileSize: 16, defaultZoom: 4
+      },
+      {
+        id: 'interiors', title: 'Mi-Casa: Interiors Free (16x89)',
+        src: './mi-casa/Interiors_free_16x16.png', cols: 16, rows: 89, tileSize: 16, defaultZoom: 3
+      },
+    ];
+
+    const container = document.getElementById('atlases');
+
+    ATLAS_CONFIGS.forEach(cfg => {
+      const section = document.createElement('div');
+      section.className = 'atlas-section';
+      section.innerHTML = `
+        <h2>${cfg.title}</h2>
+        <div class="zoom-controls" id="zoom-${cfg.id}">
+          Zoom:
+          <button onclick="setZoom('${cfg.id}', 2)" ${cfg.defaultZoom===2?'class="active"':''}>2x</button>
+          <button onclick="setZoom('${cfg.id}', 3)" ${cfg.defaultZoom===3?'class="active"':''}>3x</button>
+          <button onclick="setZoom('${cfg.id}', 4)" ${cfg.defaultZoom===4?'class="active"':''}>4x</button>
+          <button onclick="setZoom('${cfg.id}', 6)">6x</button>
+        </div>
+        <div class="atlas-container" id="container-${cfg.id}"></div>
+      `;
+      container.appendChild(section);
+
+      createAtlas(cfg);
+    });
+
+    function createAtlas(cfg) {
+      const wrapper = document.getElementById(`container-${cfg.id}`);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      wrapper.appendChild(canvas);
+
+      const img = new Image();
+      const atlasData = { cfg, img, canvas, ctx, zoom: cfg.defaultZoom };
+      allAtlases.push(atlasData);
+
+      img.onload = () => {
+        drawAtlas(atlasData);
+      };
+      img.src = cfg.src;
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const z = atlasData.zoom;
+        const col = Math.floor(x / (cfg.tileSize * z));
+        const row = Math.floor(y / (cfg.tileSize * z));
+
+        if (col >= 0 && col < cfg.cols && row >= 0 && row < cfg.rows) {
+          const frame = row * cfg.cols + col;
+          tooltip.style.display = 'block';
+          tooltip.style.left = (e.clientX + 15) + 'px';
+          tooltip.style.top = (e.clientY + 15) + 'px';
+          tooltip.innerHTML =
+            `<b>Frame ${frame}</b> &nbsp; Row ${row}, Col ${col}` +
+            `<br><span style="color:#aaa">${cfg.id} [${cfg.cols}x${cfg.rows}]</span>`;
+        }
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const z = atlasData.zoom;
+        const col = Math.floor(x / (cfg.tileSize * z));
+        const row = Math.floor(y / (cfg.tileSize * z));
+
+        if (col >= 0 && col < cfg.cols && row >= 0 && row < cfg.rows) {
+          const frame = row * cfg.cols + col;
+          panelDetail.innerHTML =
+            `<b>Frame ${frame}</b><br>` +
+            `Row: ${row}, Col: ${col}<br>` +
+            `Tileset: ${cfg.id}<br>` +
+            `Grid: ${cfg.cols}x${cfg.rows}`;
+
+          panelCtx.clearRect(0, 0, 96, 96);
+          panelCtx.drawImage(
+            img,
+            col * cfg.tileSize, row * cfg.tileSize,
+            cfg.tileSize, cfg.tileSize,
+            0, 0, 96, 96
+          );
+        }
+      });
+    }
+
+    function drawAtlas(atlasData) {
+      const { cfg, img, canvas, ctx, zoom: z } = atlasData;
+      canvas.width = cfg.cols * cfg.tileSize * z;
+      canvas.height = cfg.rows * cfg.tileSize * z;
+      ctx.imageSmoothingEnabled = false;
+
+      // Draw image scaled
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Draw grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= cfg.cols; x++) {
+        ctx.beginPath();
+        ctx.moveTo(x * cfg.tileSize * z + 0.5, 0);
+        ctx.lineTo(x * cfg.tileSize * z + 0.5, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= cfg.rows; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, y * cfg.tileSize * z + 0.5);
+        ctx.lineTo(canvas.width, y * cfg.tileSize * z + 0.5);
+        ctx.stroke();
+      }
+
+      // Draw frame numbers if zoom >= 3
+      if (z >= 3) {
+        const fontSize = Math.max(8, cfg.tileSize * z * 0.18);
+        ctx.font = `${fontSize}px monospace`;
+        for (let row = 0; row < cfg.rows; row++) {
+          for (let col = 0; col < cfg.cols; col++) {
+            const frame = row * cfg.cols + col;
+            const tx = col * cfg.tileSize * z + 2;
+            const ty = row * cfg.tileSize * z + fontSize + 1;
+            const text = String(frame);
+            const tw = ctx.measureText(text).width;
+            ctx.fillStyle = 'rgba(0,0,0,0.55)';
+            ctx.fillRect(tx - 1, ty - fontSize, tw + 2, fontSize + 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.75)';
+            ctx.fillText(text, tx, ty);
+          }
+        }
+      }
+    }
+
+    function setZoom(id, zoom) {
+      const atlas = allAtlases.find(a => a.cfg.id === id);
+      if (!atlas) return;
+      atlas.zoom = zoom;
+      drawAtlas(atlas);
+
+      // Update button styles
+      const btns = document.querySelectorAll(`#zoom-${id} button`);
+      btns.forEach(b => {
+        b.classList.toggle('active', b.textContent.trim() === zoom + 'x');
+      });
+    }
+
+    function searchFrame() {
+      const input = document.getElementById('searchFrame');
+      const frame = parseInt(input.value);
+      if (isNaN(frame) || frame < 0) return;
+
+      // Remove old highlights
+      document.querySelectorAll('.highlight-overlay').forEach(el => el.remove());
+
+      // Search in all atlases
+      for (const atlas of allAtlases) {
+        const { cfg, canvas, zoom: z } = atlas;
+        const maxFrame = cfg.cols * cfg.rows - 1;
+        if (frame > maxFrame) continue;
+
+        const row = Math.floor(frame / cfg.cols);
+        const col = frame % cfg.cols;
+        const wrapper = document.getElementById(`container-${cfg.id}`);
+
+        const highlight = document.createElement('div');
+        highlight.className = 'highlight-overlay';
+        highlight.style.left = (col * cfg.tileSize * z) + 'px';
+        highlight.style.top = (row * cfg.tileSize * z) + 'px';
+        highlight.style.width = (cfg.tileSize * z) + 'px';
+        highlight.style.height = (cfg.tileSize * z) + 'px';
+        wrapper.style.position = 'relative';
+        wrapper.appendChild(highlight);
+
+        // Scroll into view
+        canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Auto-select in panel
+        panelDetail.innerHTML =
+          `<b>Frame ${frame}</b><br>` +
+          `Row: ${row}, Col: ${col}<br>` +
+          `Tileset: ${cfg.id}<br>` +
+          `Grid: ${cfg.cols}x${cfg.rows}`;
+
+        const pCtx = panelCanvas.getContext('2d');
+        pCtx.imageSmoothingEnabled = false;
+        pCtx.clearRect(0, 0, 96, 96);
+        pCtx.drawImage(
+          atlas.img,
+          col * cfg.tileSize, row * cfg.tileSize,
+          cfg.tileSize, cfg.tileSize,
+          0, 0, 96, 96
+        );
+
+        // Remove highlight after 3 seconds
+        setTimeout(() => highlight.remove(), 3000);
+        break; // Show first match only
+      }
+    }
+
+    // Allow Enter key in search
+    document.getElementById('searchFrame').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') searchFrame();
+    });
+  </script>
+</body>
+</html>

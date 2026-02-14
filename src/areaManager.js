@@ -10,7 +10,7 @@ import {
   CASTLE_MAP, CASTLE_OBJECTS,
 } from "./maps/index";
 import {
-  TREES, PLANTS, FENCES, INTERACTABLES, ITEMS,
+  TREES, PLANTS, FENCES, INTERACTABLES, ITEMS, BUILDINGS,
   CHARACTERS, SPECIAL_CHARS, FURNITURE, ROCKS, MC_CHEST
 } from "./sprites";
 import { gameState, markItemCollected, isItemCollected, markChestOpened, isChestOpened, addGold, addExp, healPlayer, addToInventory } from "./gameState";
@@ -336,17 +336,17 @@ function createTree(obj, x, y, mapScale, objScale, tileSize) {
 
 function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
   const offset = tileSize * mapScale;
-  const wall = obj.style === "dark" ? 
-    { topLeft: 305, top: 306, topRight: 307, bottomLeft: 383, bottom: 384, bottomRight: 385 } :
-    { topLeft: 302, top: 303, topRight: 304, bottomLeft: 380, bottom: 381, bottomRight: 382 };
-  
+  const wall = obj.style === "dark" ? BUILDINGS.wallDark : BUILDINGS.wallLight;
+
   const buildingParts = [];
   const buildingId = `building_${obj.name}`;
-  
+
   // 屋顶
   [-1, 0, 1].forEach(dx => {
+    const roofFrame = dx === -1 ? BUILDINGS.roof.peakLeft :
+                      dx === 1 ? BUILDINGS.roof.peakRight : BUILDINGS.roof.peak;
     const part = k.add([
-      k.sprite("spritesheet", { frame: dx === -1 ? 224 : dx === 1 ? 226 : 225 }),
+      k.sprite("spritesheet", { frame: roofFrame }),
       k.pos(x + dx * offset, y - offset * 2),
       k.anchor("center"),
       k.scale(objScale * 0.9),
@@ -354,14 +354,14 @@ function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
     ]);
     buildingParts.push(part);
   });
-  
+
   // 墙壁
   const wallParts = [
     { frame: wall.topLeft, dx: -1, dy: -1 },
-    { frame: 227, dx: 0, dy: -1 }, // 门上部
+    { frame: BUILDINGS.door.closed, dx: 0, dy: -1 }, // 门上部
     { frame: wall.topRight, dx: 1, dy: -1 },
     { frame: wall.bottomLeft, dx: -1, dy: 0 },
-    { frame: 266, dx: 0, dy: 0 }, // 门
+    { frame: BUILDINGS.door.open, dx: 0, dy: 0 }, // 门
     { frame: wall.bottomRight, dx: 1, dy: 0 },
   ];
   

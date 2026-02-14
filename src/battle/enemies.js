@@ -1,5 +1,5 @@
 // 敌人数据定义
-import { CHARACTERS } from "../sprites";
+import { CHARACTERS, SPECIAL_CHARS } from "../sprites";
 
 // 怪物类型数据
 export const ENEMY_DATA = {
@@ -12,7 +12,7 @@ export const ENEMY_DATA = {
     def: 1,
     exp: 10,
     gold: 5,
-    frame: 155, // 使用精灵表中的适当帧
+    frame: CHARACTERS.npc2.down, // 绿色NPC = 史莱姆
     skills: ["tackle"],
     drops: [
       { item: "hpPotion", chance: 0.2 },
@@ -27,7 +27,7 @@ export const ENEMY_DATA = {
     def: 2,
     exp: 20,
     gold: 12,
-    frame: 156,
+    frame: CHARACTERS.npc4.down, // 红色NPC = 哥布林
     skills: ["slash", "tackle"],
     drops: [
       { item: "keyBronze", chance: 0.1 },
@@ -43,7 +43,7 @@ export const ENEMY_DATA = {
     def: 3,
     exp: 35,
     gold: 20,
-    frame: 157,
+    frame: CHARACTERS.npc5.down, // 棕色NPC = 野狼
     skills: ["bite", "howl"],
     drops: [
       { item: "hpPotion", chance: 0.3 },
@@ -59,7 +59,7 @@ export const ENEMY_DATA = {
     def: 1,
     exp: 15,
     gold: 8,
-    frame: 158,
+    frame: CHARACTERS.npc6.down, // 灰色NPC = 蝙蝠
     skills: ["sonic", "tackle"],
     drops: [
       { item: "mpPotion", chance: 0.15 },
@@ -74,7 +74,7 @@ export const ENEMY_DATA = {
     def: 5,
     exp: 45,
     gold: 30,
-    frame: 159,
+    frame: CHARACTERS.npc8.down, // 黑色NPC = 骷髅兵
     skills: ["slash", "boneshield"],
     drops: [
       { item: "ore_iron", chance: 0.2 },
@@ -90,7 +90,7 @@ export const ENEMY_DATA = {
     def: 10,
     exp: 80,
     gold: 50,
-    frame: 160,
+    frame: CHARACTERS.npc7.down, // 金色NPC = 岩石傀儡
     skills: ["smash", "harden"],
     drops: [
       { item: "ore_gold", chance: 0.15 },
@@ -107,7 +107,7 @@ export const ENEMY_DATA = {
     def: 15,
     exp: 500,
     gold: 1000,
-    frame: 269, // 使用国王帧作为BOSS
+    frame: SPECIAL_CHARS.king.front, // 使用国王帧作为BOSS
     skills: ["dark_slash", "hellfire", "shadow_clone"],
     drops: [
       { item: "swordGold", chance: 0.5 },

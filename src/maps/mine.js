@@ -1,6 +1,6 @@
 // 矿石山地图 - 挖矿和探索区域
 import { TILE_TYPES } from "./tileTypes";
-import { PLANTS, INTERACTABLES, ITEMS, CHARACTERS, ROCKS, BUILDINGS } from "../sprites";
+import { PLANTS, INTERACTABLES, ITEMS, CHARACTERS, ROCKS } from "../sprites";
 
 const G = TILE_TYPES.GRASS;
 const S = TILE_TYPES.SAND;
@@ -91,12 +91,12 @@ export const MINE_OBJECTS = [
   { type: "chest", x: 27, y: 15, name: "mine_chest3", frame: INTERACTABLES.chest.closed, gold: 100 },
   
   // ===== 火把照明 =====
-  { type: "torch", x: 9, y: 4, frame: 233 },
-  { type: "torch", x: 20, y: 4, frame: 233 },
-  { type: "torch", x: 4, y: 8, frame: 233 },
-  { type: "torch", x: 25, y: 8, frame: 233 },
-  { type: "torch", x: 4, y: 16, frame: 233 },
-  { type: "torch", x: 25, y: 16, frame: 233 },
+  { type: "torch", x: 9, y: 4, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 20, y: 4, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 4, y: 8, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 25, y: 8, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 4, y: 16, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 25, y: 16, frame: INTERACTABLES.torch.wall },
   
   // ===== 怪物生成点 =====
   { type: "enemy_spawn", x: 12, y: 8, enemyType: "skeleton", level: 5 },

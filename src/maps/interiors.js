@@ -1,7 +1,7 @@
 // 室内场景地图数据
 import { TILE_TYPES } from "./tileTypes";
-import { 
-  FURNITURE, INTERACTABLES, ITEMS, CHARACTERS,
+import {
+  FURNITURE, INTERACTABLES, ITEMS, CHARACTERS, SPECIAL_CHARS,
   MC_FLOORS, MC_FURNITURE, MC_DOORS_WINDOWS, MC_SMALL_ITEMS
 } from "../sprites";
 
@@ -256,7 +256,7 @@ export const THRONE_ROOM_INTERIOR = {
     // 王座
     { type: "furniture", x: 10, y: 2, frame: FURNITURE.chair.throne },
     // 国王
-    { type: "king", x: 10, y: 3, name: "throne_king", frame: 269, dialogue: "king" },
+    { type: "king", x: 10, y: 3, name: "throne_king", frame: SPECIAL_CHARS.king.front, dialogue: "king" },
     // 红地毯 (通向王座)
     { type: "rug", x: 9, y: 4, frame: FURNITURE.rug.topLeft },
     { type: "rug", x: 10, y: 4, frame: FURNITURE.rug.top },
@@ -288,18 +288,18 @@ export const THRONE_ROOM_INTERIOR = {
     // 法师
     { type: "npc", x: 7, y: 6, name: "throne_wizard", frame: CHARACTERS.mage.down, dialogue: "wizard" },
     // 柱子/雕像
-    { type: "statue", x: 3, y: 3, frame: 272 },
-    { type: "statue", x: 17, y: 3, frame: 272 },
-    { type: "statue", x: 3, y: 9, frame: 272 },
-    { type: "statue", x: 17, y: 9, frame: 272 },
+    { type: "statue", x: 3, y: 3, frame: SPECIAL_CHARS.statue },
+    { type: "statue", x: 17, y: 3, frame: SPECIAL_CHARS.statue },
+    { type: "statue", x: 3, y: 9, frame: SPECIAL_CHARS.statue },
+    { type: "statue", x: 17, y: 9, frame: SPECIAL_CHARS.statue },
     // 旗帜
     { type: "flag", x: 2, y: 1, frame: INTERACTABLES.flag.red },
     { type: "flag", x: 4, y: 1, frame: INTERACTABLES.flag.blue },
     { type: "flag", x: 16, y: 1, frame: INTERACTABLES.flag.blue },
     { type: "flag", x: 18, y: 1, frame: INTERACTABLES.flag.red },
     // 火把
-    { type: "torch", x: 2, y: 6, frame: 233 },
-    { type: "torch", x: 18, y: 6, frame: 233 },
+    { type: "torch", x: 2, y: 6, frame: INTERACTABLES.torch.wall },
+    { type: "torch", x: 18, y: 6, frame: INTERACTABLES.torch.wall },
     // 宝箱 (奖励)
     { type: "chest", x: 2, y: 11, name: "throne_chest1", frame: INTERACTABLES.chest.golden, gold: 1000, locked: true },
     { type: "chest", x: 18, y: 11, name: "throne_chest2", frame: INTERACTABLES.chest.golden, gold: 1000, locked: true },

@@ -2,7 +2,7 @@
 import { k } from "./kaboomCtx";
 import { GAME_CONFIG, DIALOGUE_DATA } from "./constants";
 import {
-  SAND_TILES, GRASS_TILES, BLUE_TILES, GOLD_TILES, WATER_TILES,
+  SAND_TILES, GRASS_TILES, BLUE_TILES, GOLD_TILES,
   PLANTS, UI_NUMBERS, SPECIAL_CHARS, UI_HEARTS, ITEMS,
   BUILDINGS, TREES, FURNITURE, FENCES, INTERACTABLES,
   ROCKS, EFFECTS, CHARACTERS, getRandomDecoration
@@ -51,8 +51,8 @@ const TILE_FRAMES = {
   0: GRASS_TILES.center,
   1: SAND_TILES.center,
   2: GOLD_TILES.center,
-  3: WATER_TILES.shallow[0],
-  4: WATER_TILES.deep[0],
+  3: BLUE_TILES.center,  // 浅水 → 蓝色地面 (原 WATER_TILES 是彩虹条纹)
+  4: BLUE_TILES.top,     // 深水 → 深蓝色地面
   5: BLUE_TILES.center,
 };
 
@@ -107,10 +107,10 @@ const WORLD_OBJECTS = [
   { type: "container", x: 17, y: 17, frame: INTERACTABLES.pot.broken },
   
   // ========== 火把 ==========
-  { type: "torch", x: 16, y: 7, frame: 233 },
-  { type: "torch", x: 20, y: 7, frame: 233 },
-  { type: "torch", x: 26, y: 5, frame: 233 },
-  { type: "torch", x: 28, y: 5, frame: 233 },
+  { type: "torch", x: 16, y: 7, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 20, y: 7, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 26, y: 5, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 28, y: 5, frame: INTERACTABLES.torch.wall },
   
   // ========== 旗帜 (所有颜色) ==========
   { type: "flag", x: 26, y: 3, frame: INTERACTABLES.flag.red },

@@ -81,10 +81,10 @@ export const CASTLE_OBJECTS = [
   { type: "flag", x: 20, y: 3, frame: INTERACTABLES.flag.red },
   
   // ===== 火把 =====
-  { type: "torch", x: 9, y: 5, frame: 233 },
-  { type: "torch", x: 21, y: 5, frame: 233 },
-  { type: "torch", x: 9, y: 9, frame: 233 },
-  { type: "torch", x: 21, y: 9, frame: 233 },
+  { type: "torch", x: 9, y: 5, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 21, y: 5, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 9, y: 9, frame: INTERACTABLES.torch.wall },
+  { type: "torch", x: 21, y: 9, frame: INTERACTABLES.torch.wall },
   
   // ===== 石栏杆 =====
   { type: "fence", x: 8, y: 11, frame: FENCES.stone.horizontal },

@@ -53,20 +53,27 @@ export const GOLD_TILES = {
   edge1: 69, edge2: 70,
 };
 
-// ========== 第0-5行 列13-17: 水面瓦片 ==========
+// ========== 水面瓦片 ==========
+// ⚠️ 重要: 原来的帧 13-16, 52-55 是彩虹条纹瓦片，不是水！
+// 本精灵表中不存在专用的水面瓦片。
+// 解决方案：使用 BLUE_TILES 作为水面替代品。
+// 请用 /debug-atlas.html 验证实际内容。
 export const WATER_TILES = {
-  // 浅水 (动画帧)
-  shallow: [13, 14, 15, 16],
-  // 深水
-  deep: [52, 53, 54, 55],
-  // 水边缘
-  edgeTop: 91, edgeBottom: 130,
-  edgeLeft: 129, edgeRight: 131,
+  // 使用蓝色地面瓦片作为水面替代
+  shallow: [BLUE_TILES.center],    // 163 - 蓝色地面中心
+  deep: [BLUE_TILES.top],          // 124 - 蓝色地面顶部 (深色变体)
+  // 水边缘 - 使用蓝色9宫格边缘
+  edgeTop: BLUE_TILES.top,         // 124
+  edgeBottom: BLUE_TILES.bottom,   // 202
+  edgeLeft: BLUE_TILES.left,       // 162
+  edgeRight: BLUE_TILES.right,     // 164
   // 角落
-  cornerTopLeft: 90, cornerTopRight: 92,
-  cornerBottomLeft: 128, cornerBottomRight: 132,
-  // 瀑布
-  waterfall: [169, 170, 171],
+  cornerTopLeft: BLUE_TILES.topLeft,       // 123
+  cornerTopRight: BLUE_TILES.topRight,     // 125
+  cornerBottomLeft: BLUE_TILES.bottomLeft, // 201
+  cornerBottomRight: BLUE_TILES.bottomRight, // 203 (was 132)
+  // 瀑布 - 无专用帧，使用蓝色变体
+  waterfall: [BLUE_TILES.center, BLUE_TILES.left, BLUE_TILES.right],
 };
 
 // ========== 第0-5行 列6-12: 装饰植物 ==========
@@ -117,27 +124,26 @@ export const UI_HEARTS = {
 };
 
 // ========== 第7-8行: 道具图标 ==========
-// 注意: 已知帧冲突 (同一帧被多个常量引用，树木优先级最高):
-//   帧 351: TREES.green.top / ITEMS.coin / INTERACTABLES.flag.green
-//   帧 390: TREES.green.middle / ITEMS.gemRed / INTERACTABLES.flag.yellow
-//   帧 352: TREES.brown.top / ITEMS.coinStack
-// 如果 coin/gem 在运行时显示为树木部分，需要重新分配帧索引。
+// 帧冲突已修复：树木占据 rows 9-11 cols 0-4，道具使用不同帧。
+// 无专用精灵的收集品使用彩蛋帧 (row 0, cols 6-12) 作为视觉替代。
+// ⚠️ 用 /debug-atlas.html 验证 axe/bow/key 的实际位置。
 export const ITEMS = {
-  // 武器
-  shield: 278, shieldGold: 279,
-  sword: 316, swordGold: 317, swordFire: 318,
-  axe: 355, axeGold: 356,
-  bow: 394, bowGold: 395,
-  // 药水
+  // 武器 - 已验证区域 (row 7-8, cols 0-6)
+  shield: 278, shieldGold: 279,             // row 7, col 5-6
+  sword: 316, swordGold: 317, swordFire: 318, // row 8, col 4-6
+  axe: 319, axeGold: 320,                   // row 8, col 7-8 ⚠️ 需验证
+  bow: 321, bowGold: 322,                   // row 8, col 9-10 ⚠️ 需验证
+  // 药水 - 已验证 (row 8, cols 0-3)
   potionRed: 312, potionBlue: 313, potionGreen: 314, potionYellow: 315,
-  // 宝石和钱币
-  coin: 351, coinStack: 352,
-  gemRed: 390, gemBlue: 391, gemGreen: 392, gemYellow: 393,
-  // 钥匙
-  keyBronze: 428, keySilver: 429, keyGold: 430,
-  // 其他
-  scroll: 467, book: 468,
-  ring: 506, amulet: 507,
+  // 钱币 - 使用彩蛋帧替代 (避免与树木 row 9 冲突)
+  coin: 8, coinStack: 7,                    // eggs.yellow, eggs.orange
+  // 宝石 - 使用彩蛋帧替代 (避免与树木 row 10 冲突)
+  gemRed: 6, gemBlue: 10, gemGreen: 9, gemYellow: 11, // eggs 各色
+  // 钥匙 - 移到 row 7 无冲突位置 ⚠️ 需验证
+  keyBronze: 280, keySilver: 281, keyGold: 282, // row 7, col 7-9
+  // 其他 ⚠️ 需验证
+  scroll: 467, book: 468,                   // row 11-12 边缘
+  ring: 506, amulet: 507,                   // row 12-13 边缘
 };
 
 // ========== 第8-11行: 房屋和建筑 ==========
@@ -187,8 +193,8 @@ export const TREES = {
   sapling: { small: 433, medium: 434 },
   // 树桩
   stump: 471,
-  // 果树
-  fruitTree: { top: 355, middle: 394, bottom: 433 },
+  // 果树 (bottom 使用独立帧，避免与 sapling.small 冲突)
+  fruitTree: { top: 355, middle: 394, bottom: 435 },
 };
 
 // ========== 第12-15行: 室内家具 (标记为 "interior") ==========
@@ -273,7 +279,7 @@ export const INTERACTABLES = {
     small: 387, mimic: 388,
   },
   // 箱子和桶
-  crate: { normal: 389, broken: 427 },
+  crate: { normal: 427, broken: 466 },    // 修复: crate 不再与 pot 冲突
   barrel: { normal: 426, open: 465 },
   pot: { normal: 350, broken: 389 },
   // 告示牌
@@ -282,14 +288,14 @@ export const INTERACTABLES = {
   },
   // 水井
   well: { top: 232, bottom: 271 },
-  // 火把和光源
+  // 火把和光源 (静态帧，原动画帧跨越不相关区域)
   torch: {
-    wall: [233, 272, 311], // 动画帧
-    stand: [310, 349, 388],
+    wall: 233,   // row 5, col 38 ⚠️ 需用 debug-atlas.html 验证
+    stand: 310,  // row 7, col 37 ⚠️ 需验证
   },
-  // 旗帜
+  // 旗帜 - 移到 row 10 cols 6-9 (避免与 hearts/potions/trees 冲突)
   flag: {
-    red: 273, blue: 312, green: 351, yellow: 390,
+    red: 396, blue: 397, green: 398, yellow: 399,  // ⚠️ 需验证
   },
   // 路牌
   signpost: 274,
@@ -381,10 +387,9 @@ export const ANIMATIONS = {
     "idle-up": 1014,
     "walk-up": { from: 1014, to: 1017, loop: true, speed: 8 },
   },
-  // 水面动画
-  water: { from: 13, to: 16, loop: true, speed: 4 },
-  // 火把动画
-  torch: { from: 233, to: 235, loop: true, speed: 6 },
+  // 水面 - 无动画 (蓝色地面替代品，静态帧)
+  // 原 from:13 to:16 是彩虹条纹瓦片，已移除动画
+  // 火把 - 无动画 (原 from:233 to:235 跨越了 UI 数字文字区域)
   // 斩击动画
   slashH: { from: 606, to: 609, loop: false, speed: 12 },
   slashV: { from: 645, to: 648, loop: false, speed: 12 },
@@ -592,8 +597,7 @@ export async function loadAllSprites() {
     sliceY: SPRITESHEET_CONFIG.sliceY,
     anims: {
       ...ANIMATIONS.player,
-      "water": ANIMATIONS.water,
-      "torch": ANIMATIONS.torch,
+      // 水面和火把动画已移除 (原帧映射错误)
       "slash-h": ANIMATIONS.slashH,
       "slash-v": ANIMATIONS.slashV,
     },
