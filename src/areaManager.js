@@ -11,7 +11,7 @@ import {
 } from "./maps/index";
 import {
   TREES, PLANTS, FENCES, INTERACTABLES, ITEMS,
-  CHARACTERS, SPECIAL_CHARS, FURNITURE, ROCKS
+  CHARACTERS, SPECIAL_CHARS, FURNITURE, ROCKS, MC_CHEST
 } from "./sprites";
 import { gameState, markItemCollected, isItemCollected, markChestOpened, isChestOpened, addGold, addExp, healPlayer, addToInventory } from "./gameState";
 import { displayDialogue } from "./utils";
@@ -119,13 +119,13 @@ function loadAreaObjects(objects, player, scale, tileSize) {
         break;
       case "item":
       case "collectible":
+      case "egg":
         createItem(obj, worldX, worldY, objectScale, player, objId);
         break;
       case "portal":
         createPortal(obj, worldX, worldY, scale, tileSize, player);
         break;
       case "flower":
-      case "egg":
       case "mushroom":
       case "grass":
         createDecoration(obj, worldX, worldY, objectScale * 0.8);
@@ -149,6 +149,9 @@ function loadAreaObjects(objects, player, scale, tileSize) {
         break;
       case "enemy_spawn":
         createEnemySpawn(obj, worldX, worldY, player);
+        break;
+      case "boss_trigger":
+        createBossTrigger(obj, worldX, worldY, player);
         break;
       case "fishing_spot":
         createFishingSpot(obj, worldX, worldY, objectScale, player);
@@ -191,7 +194,7 @@ function createChest(obj, x, y, scale, player, objId) {
   if (isChestOpened(objId)) return; // 已打开的宝箱不再显示
 
   const chest = k.add([
-    k.sprite("spritesheet", { frame: obj.frame }),
+    k.sprite("mc-small-items", { frame: MC_CHEST.closed }),
     k.pos(x, y),
     k.area({ shape: new k.Rect(k.vec2(0), 12, 12) }),
     k.body({ isStatic: true }),
@@ -205,7 +208,7 @@ function createChest(obj, x, y, scale, player, objId) {
 
   player.onCollide(objId, () => {
     if (player.isInDialogue || isChestOpened(objId)) return;
-    
+
     // 检查是否需要钥匙
     if (obj.locked) {
       const keyType = obj.frame === INTERACTABLES.chest.golden ? "keyGold" : "keyBronze";
@@ -221,7 +224,7 @@ function createChest(obj, x, y, scale, player, objId) {
 
     player.isInDialogue = true;
     markChestOpened(objId);
-    chest.frame = INTERACTABLES.chest.open;
+    chest.frame = MC_CHEST.open;
     addGold(obj.gold || 50);
     addExp(30);
     
@@ -485,6 +488,12 @@ function handleItemPickup(obj, x, y) {
       addToInventory({ type: obj.itemType, name: obj.itemType });
       message = "获得钥匙！";
       break;
+    case "egg_red": case "egg_orange": case "egg_yellow":
+    case "egg_green": case "egg_blue": case "egg_purple":
+      addToInventory({ type: obj.itemType, name: obj.itemType });
+      addExp(20);
+      message = "获得彩蛋！+20 经验";
+      break;
     default:
       addToInventory({ type: obj.itemType, name: obj.itemType });
       message = "获得物品！";
@@ -592,6 +601,38 @@ function createEnemySpawn(obj, x, y, player) {
         k.go("battle", obj.enemyType, obj.level);
       });
     }
+  });
+}
+
+function createBossTrigger(obj, x, y, player) {
+  const bossId = `boss_${obj.x}_${obj.y}`;
+
+  // 已击败的BOSS不再触发
+  if (gameState.defeatedEnemies.has(bossId)) return;
+
+  const triggerArea = k.add([
+    k.area({ shape: new k.Rect(k.vec2(0), 40, 40) }),
+    k.pos(x, y),
+    k.anchor("center"),
+    bossId,
+    "boss_trigger",
+  ]);
+  currentAreaObjects.push(triggerArea);
+
+  player.onCollide(bossId, () => {
+    if (player.isInDialogue) return;
+    if (gameState.defeatedEnemies.has(bossId)) return;
+
+    player.isInDialogue = true;
+    gameState.defeatedEnemies.add(bossId);
+
+    displayDialogue({
+      speaker: "系统",
+      lines: ["前方感受到强大的气息...", "一个强大的敌人挡住了去路！", "准备战斗！"]
+    }, () => {
+      player.isInDialogue = false;
+      k.go("battle", obj.bossType, gameState.player.level + 5);
+    });
   });
 }
 

@@ -6,7 +6,7 @@ import { TILE_FRAMES } from "../maps/index";
 import { gameState } from "../gameState";
 import { createPlayer, setupPlayerControls } from "../player";
 import { setCamScale, showGameUI, updateUI, displayDialogue } from "../utils";
-import { CHARACTERS, SPECIAL_CHARS, INTERACTABLES, FURNITURE, MC_FLOORS } from "../sprites";
+import { CHARACTERS, SPECIAL_CHARS, INTERACTABLES, FURNITURE, MC_FLOORS, MC_CHEST } from "../sprites";
 import { markChestOpened, isChestOpened, addGold, addExp, healPlayer, saveGame } from "../gameState";
 
 // 当前室内对象
@@ -202,9 +202,9 @@ function createInteriorNPC(obj, x, y, scale, player) {
 // 创建室内宝箱
 function createInteriorChest(obj, x, y, scale, player, objId) {
   if (isChestOpened(objId)) return;
-  
+
   const chest = k.add([
-    k.sprite("spritesheet", { frame: obj.frame }),
+    k.sprite("mc-small-items", { frame: MC_CHEST.closed }),
     k.pos(x, y),
     k.area({ shape: new k.Rect(k.vec2(0), 12, 12) }),
     k.body({ isStatic: true }),
@@ -215,10 +215,10 @@ function createInteriorChest(obj, x, y, scale, player, objId) {
     "chest",
   ]);
   currentInteriorObjects.push(chest);
-  
+
   player.onCollide(objId, () => {
     if (player.isInDialogue || isChestOpened(objId)) return;
-    
+
     // 检查是否需要钥匙
     if (obj.locked) {
       const hasKey = gameState.inventory.some(item => item.type === "keyGold");
@@ -231,10 +231,10 @@ function createInteriorChest(obj, x, y, scale, player, objId) {
         return;
       }
     }
-    
+
     player.isInDialogue = true;
     markChestOpened(objId);
-    chest.frame = INTERACTABLES.chest.open;
+    chest.frame = MC_CHEST.open;
     addGold(obj.gold || 50);
     addExp(50);
     

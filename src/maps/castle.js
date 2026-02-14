@@ -133,6 +133,9 @@ export const CASTLE_OBJECTS = [
   // ===== 告示牌 =====
   { type: "sign", x: 2, y: 12, frame: INTERACTABLES.sign.arrow, dialogue: "sign_village_back" },
   
+  // ===== Mi-Casa 风格建筑 =====
+  { type: "building", x: 10, y: 18, name: "library", style: "dark", enterable: true, interior: "library" },
+
   // ===== 传送点 =====
   { type: "portal", x: 0, y: 12, targetArea: "village", targetX: 28, targetY: 12 },
 ];

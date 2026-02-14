@@ -117,6 +117,11 @@ export const UI_HEARTS = {
 };
 
 // ========== 第7-8行: 道具图标 ==========
+// 注意: 已知帧冲突 (同一帧被多个常量引用，树木优先级最高):
+//   帧 351: TREES.green.top / ITEMS.coin / INTERACTABLES.flag.green
+//   帧 390: TREES.green.middle / ITEMS.gemRed / INTERACTABLES.flag.yellow
+//   帧 352: TREES.brown.top / ITEMS.coinStack
+// 如果 coin/gem 在运行时显示为树木部分，需要重新分配帧索引。
 export const ITEMS = {
   // 武器
   shield: 278, shieldGold: 279,
@@ -573,6 +578,12 @@ export const MC_SMALL_ITEMS = {
   chestOpen: 105,
 };
 
+// Mi-Casa 宝箱帧映射 (使用 mc-small-items tileset 中已验证的宝箱精灵)
+export const MC_CHEST = {
+  closed: MC_SMALL_ITEMS.chestClosed, // 104
+  open: MC_SMALL_ITEMS.chestOpen,     // 105
+};
+
 // ========== 加载所有精灵 ==========
 export async function loadAllSprites() {
   // 加载主精灵表
@@ -592,6 +603,9 @@ export async function loadAllSprites() {
   
   // 加载 Mi-Casa 资产
   await loadMiCasaAssets();
+
+  // 加载小游戏资产
+  await loadMinigameAssets();
 }
 
 // ========== 加载 Mi-Casa 资产 ==========

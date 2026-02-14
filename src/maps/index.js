@@ -12,7 +12,7 @@ export const TILE_FRAMES = {
   [TILE_TYPES.WATER_SHALLOW]: WATER_TILES.shallow[0],
   [TILE_TYPES.WATER_DEEP]: WATER_TILES.deep[0],
   [TILE_TYPES.BLUE]: BLUE_TILES.center,
-  [TILE_TYPES.WOOD]: GOLD_TILES.center,
+  [TILE_TYPES.WOOD]: SAND_TILES.center,
 };
 
 // 区域传送点定义

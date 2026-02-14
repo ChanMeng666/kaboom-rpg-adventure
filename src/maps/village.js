@@ -101,6 +101,10 @@ export const VILLAGE_OBJECTS = [
   { type: "fence", x: 20, y: 8, frame: FENCES.wood.horizontal },
   { type: "fence", x: 21, y: 8, frame: FENCES.wood.horizontal },
   
+  // ===== Mi-Casa 风格建筑 =====
+  { type: "building", x: 10, y: 5, name: "cozy_house", style: "light", enterable: true, interior: "cozy_house" },
+  { type: "building", x: 16, y: 16, name: "restaurant", style: "dark", enterable: true, interior: "restaurant" },
+
   // ===== 传送点标记 =====
   { type: "portal", x: 0, y: 12, targetArea: "forest", targetX: 28, targetY: 12 },
   { type: "portal", x: 29, y: 12, targetArea: "castle", targetX: 1, targetY: 12 },
