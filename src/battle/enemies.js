@@ -14,11 +14,9 @@ export const ENEMY_DATA = {
     gold: 5,
     frame: CHARACTERS.npc2.down, // 绿色NPC = 史莱姆
     skills: ["tackle"],
-    drops: [
-      { item: "hpPotion", chance: 0.2 },
-    ],
+    drops: [{ item: "hpPotion", chance: 0.2 }],
   },
-  
+
   goblin: {
     name: "哥布林",
     hp: 35,
@@ -34,7 +32,7 @@ export const ENEMY_DATA = {
       { item: "coin", chance: 0.3 },
     ],
   },
-  
+
   wolf: {
     name: "野狼",
     hp: 50,
@@ -45,11 +43,9 @@ export const ENEMY_DATA = {
     gold: 20,
     frame: CHARACTERS.npc5.down, // 棕色NPC = 野狼
     skills: ["bite", "howl"],
-    drops: [
-      { item: "hpPotion", chance: 0.3 },
-    ],
+    drops: [{ item: "hpPotion", chance: 0.3 }],
   },
-  
+
   // 矿洞怪物
   bat: {
     name: "蝙蝠",
@@ -61,11 +57,9 @@ export const ENEMY_DATA = {
     gold: 8,
     frame: CHARACTERS.npc6.down, // 灰色NPC = 蝙蝠
     skills: ["sonic", "tackle"],
-    drops: [
-      { item: "mpPotion", chance: 0.15 },
-    ],
+    drops: [{ item: "mpPotion", chance: 0.15 }],
   },
-  
+
   skeleton: {
     name: "骷髅兵",
     hp: 60,
@@ -81,7 +75,7 @@ export const ENEMY_DATA = {
       { item: "keySilver", chance: 0.05 },
     ],
   },
-  
+
   golem: {
     name: "岩石傀儡",
     hp: 100,
@@ -97,7 +91,7 @@ export const ENEMY_DATA = {
       { item: "gemRed", chance: 0.05 },
     ],
   },
-  
+
   // BOSS
   demon_lord: {
     name: "魔王",
@@ -155,7 +149,7 @@ export const SKILL_DATA = {
     accuracy: 90,
     description: "充满黑暗力量的斩击",
   },
-  
+
   // 特殊技能
   sonic: {
     name: "超声波",
@@ -196,7 +190,7 @@ export const SKILL_DATA = {
     effect: "evasion_up",
     description: "创造分身，提高闪避",
   },
-  
+
   // 玩家技能
   attack: {
     name: "普通攻击",
@@ -235,9 +229,9 @@ export const SKILL_DATA = {
 export function getScaledEnemy(enemyType, level = 1) {
   const base = ENEMY_DATA[enemyType];
   if (!base) return null;
-  
+
   const scale = 1 + (level - 1) * 0.2;
-  
+
   return {
     ...base,
     level,
@@ -257,12 +251,12 @@ export function getRandomEncounter(areaType, playerLevel) {
     mine: ["bat", "skeleton", "golem"],
     castle: ["skeleton", "golem"],
   };
-  
+
   const enemies = areaEnemies[areaType] || ["slime"];
   const enemyType = enemies[Math.floor(Math.random() * enemies.length)];
-  
+
   // 等级在玩家等级附近浮动
   const level = Math.max(1, playerLevel + Math.floor(Math.random() * 3) - 1);
-  
+
   return getScaledEnemy(enemyType, level);
 }

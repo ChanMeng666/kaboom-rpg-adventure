@@ -1,6 +1,11 @@
 // 任务UI系统
 import { k } from "../kaboomCtx";
-import { getActiveQuests, getCurrentMainQuest, completeQuest, isQuestComplete } from "../quest/questSystem";
+import {
+  getActiveQuests,
+  getCurrentMainQuest,
+  completeQuest,
+  isQuestComplete,
+} from "../quest/questSystem";
 
 // 任务面板状态
 let questPanelOpen = false;
@@ -83,14 +88,14 @@ export function createQuestUI() {
       <div id="tracker-content"></div>
     </div>
   `;
-  
+
   const container = document.createElement("div");
   container.innerHTML = html;
   document.body.appendChild(container);
-  
+
   // 绑定事件
   document.getElementById("btn-quest-close").addEventListener("click", toggleQuestPanel);
-  
+
   // Q键切换任务面板
   k.onKeyPress("q", () => {
     toggleQuestPanel();
@@ -101,10 +106,10 @@ export function createQuestUI() {
 export function toggleQuestPanel() {
   questPanelOpen = !questPanelOpen;
   const panel = document.getElementById("quest-panel");
-  
+
   if (panel) {
     panel.style.display = questPanelOpen ? "block" : "none";
-    
+
     if (questPanelOpen) {
       refreshQuestPanel();
     }
@@ -115,7 +120,7 @@ export function toggleQuestPanel() {
 function refreshQuestPanel() {
   const mainQuestEl = document.getElementById("main-quest");
   const sideQuestsEl = document.getElementById("side-quests");
-  
+
   // 主线任务
   if (mainQuestEl) {
     const mainQuest = getCurrentMainQuest();
@@ -131,7 +136,9 @@ function refreshQuestPanel() {
         <div style="font-size: 12px;">
           ${renderObjectives(mainQuest)}
         </div>
-        ${complete ? `
+        ${
+          complete
+            ? `
           <button onclick="window.completeMainQuest('${mainQuest.id}')" style="
             margin-top: 10px;
             padding: 5px 15px;
@@ -141,23 +148,26 @@ function refreshQuestPanel() {
             color: white;
             cursor: pointer;
           ">完成任务</button>
-        ` : ""}
+        `
+            : ""
+        }
       `;
     } else {
       mainQuestEl.innerHTML = `<div style="color: #9ca3af;">已完成所有主线任务！</div>`;
     }
   }
-  
+
   // 支线任务
   if (sideQuestsEl) {
-    const quests = getActiveQuests().filter(q => q.type === "side");
-    
+    const quests = getActiveQuests().filter((q) => q.type === "side");
+
     if (quests.length === 0) {
       sideQuestsEl.innerHTML = `<div style="color: #9ca3af; text-align: center;">暂无支线任务</div>`;
     } else {
-      sideQuestsEl.innerHTML = quests.map(quest => {
-        const complete = quest.progress.every(p => p.completed);
-        return `
+      sideQuestsEl.innerHTML = quests
+        .map((quest) => {
+          const complete = quest.progress.every((p) => p.completed);
+          return `
           <div style="
             padding: 10px;
             background: #2a2a3a;
@@ -175,7 +185,8 @@ function refreshQuestPanel() {
             </div>
           </div>
         `;
-      }).join("");
+        })
+        .join("");
     }
   }
 }
@@ -183,35 +194,37 @@ function refreshQuestPanel() {
 // 渲染任务目标
 function renderObjectives(quest) {
   if (!quest.objectives) return "";
-  
-  return quest.objectives.map(obj => {
-    const current = obj.current || 0;
-    const complete = current >= obj.count;
-    const color = complete ? "#22c55e" : "#9ca3af";
-    
-    let text = "";
-    switch (obj.type) {
-      case "talk":
-        text = `与 ${obj.target} 对话`;
-        break;
-      case "kill":
-        text = `击败 ${obj.target}`;
-        break;
-      case "collect":
-        text = `收集 ${obj.target}`;
-        break;
-      case "deliver":
-        text = `交付给 ${obj.target}`;
-        break;
-      case "fish":
-        text = `钓鱼`;
-        break;
-      default:
-        text = obj.type;
-    }
-    
-    return `<div style="color: ${color};">${complete ? "✓" : "○"} ${text} (${current}/${obj.count})</div>`;
-  }).join("");
+
+  return quest.objectives
+    .map((obj) => {
+      const current = obj.current || 0;
+      const complete = current >= obj.count;
+      const color = complete ? "#22c55e" : "#9ca3af";
+
+      let text;
+      switch (obj.type) {
+        case "talk":
+          text = `与 ${obj.target} 对话`;
+          break;
+        case "kill":
+          text = `击败 ${obj.target}`;
+          break;
+        case "collect":
+          text = `收集 ${obj.target}`;
+          break;
+        case "deliver":
+          text = `交付给 ${obj.target}`;
+          break;
+        case "fish":
+          text = `钓鱼`;
+          break;
+        default:
+          text = obj.type;
+      }
+
+      return `<div style="color: ${color};">${complete ? "✓" : "○"} ${text} (${current}/${obj.count})</div>`;
+    })
+    .join("");
 }
 
 // 显示任务追踪器
@@ -235,27 +248,29 @@ export function hideQuestTracker() {
 export function updateQuestTracker() {
   const content = document.getElementById("tracker-content");
   if (!content) return;
-  
+
   const mainQuest = getCurrentMainQuest();
   if (!mainQuest) {
     content.innerHTML = `<div style="color: #9ca3af;">无活跃任务</div>`;
     return;
   }
-  
+
   content.innerHTML = `
     <div style="color: #fbbf24; margin-bottom: 3px;">${mainQuest.name}</div>
-    ${mainQuest.objectives.map(obj => {
-      const current = obj.current || 0;
-      const complete = current >= obj.count;
-      return `<div style="color: ${complete ? "#22c55e" : "#d1d5db"};">
+    ${mainQuest.objectives
+      .map((obj) => {
+        const current = obj.current || 0;
+        const complete = current >= obj.count;
+        return `<div style="color: ${complete ? "#22c55e" : "#d1d5db"};">
         ${complete ? "✓" : "•"} ${current}/${obj.count}
       </div>`;
-    }).join("")}
+      })
+      .join("")}
   `;
 }
 
 // 全局函数 - 完成主线任务
-window.completeMainQuest = function(questId) {
+window.completeMainQuest = function (questId) {
   const rewards = completeQuest(questId);
   if (rewards) {
     alert(`任务完成！\n获得: ${rewards.exp} 经验, ${rewards.gold} 金币`);

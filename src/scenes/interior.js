@@ -1,13 +1,21 @@
 // 室内场景模块
 import { k } from "../kaboomCtx";
-import { GAME_CONFIG, DIALOGUE_DATA } from "../constants";
+import { GAME_CONFIG } from "../data/gameConfig.js";
+import { DIALOGUE_DATA } from "../data/dialogues.js";
 import { INTERIOR_MAPS } from "../maps/interiors";
 import { TILE_FRAMES } from "../maps/index";
-import { gameState } from "../gameState";
+import { gameState, restoreMana } from "../gameState";
 import { createPlayer, setupPlayerControls } from "../player";
-import { setCamScale, showGameUI, updateUI, displayDialogue } from "../utils";
-import { CHARACTERS, SPECIAL_CHARS, INTERACTABLES, FURNITURE, MC_FLOORS, MC_CHEST } from "../sprites";
-import { markChestOpened, isChestOpened, addGold, addExp, healPlayer, saveGame } from "../gameState";
+import { setCamScale, showGameUI, updateUI, displayDialogue } from "../uiHelpers";
+import { MC_FLOORS, MC_CHEST } from "../sprites";
+import {
+  markChestOpened,
+  isChestOpened,
+  addGold,
+  addExp,
+  healPlayer,
+  saveGame,
+} from "../gameState";
 
 // 当前室内对象
 let currentInteriorObjects = [];
@@ -16,38 +24,34 @@ let currentInteriorObjects = [];
 export function createInteriorScene() {
   k.scene("interior", (interiorName, returnArea, returnX, returnY) => {
     const interior = INTERIOR_MAPS[interiorName];
-    
+
     if (!interior) {
-      console.error(`室内场景 ${interiorName} 不存在`);
+      console.error(`[Interior] Scene "${interiorName}" not found`);
       k.go("world");
       return;
     }
-    
+
     // 保存返回信息
     gameState.returnInfo = { area: returnArea, x: returnX, y: returnY };
-    
+
     // 显示UI
     showGameUI(true);
     updateUI();
-    
+
     // 设置背景
     k.setBackground(k.Color.fromHex(interior.bgColor || "#2a1a0a"));
-    
+
     // 配置
     const tileSize = GAME_CONFIG.TILE_SIZE;
     const scale = GAME_CONFIG.SCALE_FACTOR;
     const objScale = GAME_CONFIG.OBJECT_SCALE || 2;
-    
+
     // 清除旧对象
     clearInteriorObjects();
-    
+
     // 创建地图容器
-    const mapContainer = k.add([
-      k.pos(0, 0),
-      k.scale(scale),
-      "interior-map",
-    ]);
-    
+    const mapContainer = k.add([k.pos(0, 0), k.scale(scale), "interior-map"]);
+
     // 检查是否使用 Mi-Casa tileset
     if (interior.useMiCasaTileset) {
       // 渲染 Mi-Casa 风格地图
@@ -58,15 +62,16 @@ export function createInteriorScene() {
         for (let x = 0; x < interior.width; x++) {
           const tileType = interior.tiles[y][x];
           const tileFrame = TILE_FRAMES[tileType];
-          
+
           mapContainer.add([
             k.sprite("spritesheet", { frame: tileFrame }),
             k.pos(x * tileSize, y * tileSize),
             k.z(0),
           ]);
-          
+
           // 墙壁碰撞
-          if (tileType === 1) { // SAND 用作墙壁
+          if (tileType === 1) {
+            // SAND 用作墙壁
             mapContainer.add([
               k.area({ shape: new k.Rect(k.vec2(0), tileSize, tileSize) }),
               k.body({ isStatic: true }),
@@ -77,49 +82,49 @@ export function createInteriorScene() {
         }
       }
     }
-    
+
     // 计算出生点
     const spawnX = interior.spawnPoint.x * tileSize * scale;
     const spawnY = interior.spawnPoint.y * tileSize * scale;
-    
+
     // 创建玩家
     const player = createPlayer(spawnX, spawnY);
-    
+
     // 加载室内对象
     loadInteriorObjects(interior.objects, player, scale, tileSize, objScale, interiorName);
-    
+
     // 加载 Mi-Casa 风格对象
     if (interior.useMiCasaTileset && interior.mcObjects) {
       loadMiCasaObjects(interior.mcObjects, player, scale, tileSize);
     }
-    
+
     // 创建边界
     createInteriorBoundaries(interior.width, interior.height, tileSize, scale);
-    
+
     // 设置玩家控制
     setupPlayerControls(player);
-    
+
     // 设置相机
     setCamScale(k);
-    
+
     // 显示场景名称
     showInteriorName(interior.name);
-    
+
     // 相机跟随玩家
     k.onUpdate(() => {
       k.camPos(player.pos.x, player.pos.y);
     });
-    
+
     // F1 调试
     k.onKeyPress("f1", () => {
       k.debug.inspect = !k.debug.inspect;
     });
-    
+
     // ESC 返回
     k.onKeyPress("escape", () => {
       exitInterior();
     });
-    
+
     // 场景清理
     k.onSceneLeave(() => {
       showGameUI(false);
@@ -130,11 +135,11 @@ export function createInteriorScene() {
 
 // 加载室内对象
 function loadInteriorObjects(objects, player, scale, tileSize, objScale, interiorName) {
-  objects.forEach(obj => {
+  objects.forEach((obj) => {
     const worldX = obj.x * tileSize * scale;
     const worldY = obj.y * tileSize * scale;
     const objId = `${interiorName}_${obj.type}_${obj.x}_${obj.y}`;
-    
+
     switch (obj.type) {
       case "npc":
       case "king":
@@ -184,15 +189,17 @@ function createInteriorNPC(obj, x, y, scale, player) {
     "npc",
   ]);
   currentInteriorObjects.push(npc);
-  
+
   player.onCollide(obj.name, () => {
     if (player.isInDialogue) return;
     player.isInDialogue = true;
-    
+
     const dialogue = DIALOGUE_DATA[obj.dialogue || obj.name];
-    
+
     if (dialogue) {
-      displayDialogue(dialogue, () => { player.isInDialogue = false; });
+      displayDialogue(dialogue, () => {
+        player.isInDialogue = false;
+      });
     } else {
       player.isInDialogue = false;
     }
@@ -221,13 +228,18 @@ function createInteriorChest(obj, x, y, scale, player, objId) {
 
     // 检查是否需要钥匙
     if (obj.locked) {
-      const hasKey = gameState.inventory.some(item => item.type === "keyGold");
+      const hasKey = gameState.inventory.some((item) => item.type === "keyGold");
       if (!hasKey) {
         player.isInDialogue = true;
-        displayDialogue({
-          speaker: "系统",
-          lines: ["这个宝箱被锁住了！", "你需要一把金钥匙来打开它。"]
-        }, () => { player.isInDialogue = false; });
+        displayDialogue(
+          {
+            speaker: "系统",
+            lines: ["这个宝箱被锁住了！", "你需要一把金钥匙来打开它。"],
+          },
+          () => {
+            player.isInDialogue = false;
+          }
+        );
         return;
       }
     }
@@ -237,13 +249,18 @@ function createInteriorChest(obj, x, y, scale, player, objId) {
     chest.frame = MC_CHEST.open;
     addGold(obj.gold || 50);
     addExp(50);
-    
+
     showFloatingText(x, y, `+${obj.gold || 50} 金币`);
-    
-    displayDialogue({
-      speaker: "系统",
-      lines: [`你打开了宝箱！获得了 ${obj.gold || 50} 金币！`]
-    }, () => { player.isInDialogue = false; });
+
+    displayDialogue(
+      {
+        speaker: "系统",
+        lines: [`你打开了宝箱！获得了 ${obj.gold || 50} 金币！`],
+      },
+      () => {
+        player.isInDialogue = false;
+      }
+    );
   });
 }
 
@@ -286,7 +303,7 @@ function createItemDisplay(obj, x, y, scale) {
     "item-display",
   ]);
   currentInteriorObjects.push(item);
-  
+
   // 浮动效果
   let time = Math.random() * Math.PI * 2;
   const originalY = y;
@@ -334,10 +351,10 @@ function createExit(obj, x, y, scale, tileSize, player) {
     "exit",
   ]);
   currentInteriorObjects.push(exit);
-  
+
   player.onCollide(`exit_${obj.targetArea}`, () => {
     if (player.isInDialogue) return;
-    
+
     // 返回外部区域
     gameState.currentArea = obj.targetArea;
     gameState.playerPos = { x: obj.targetX, y: obj.targetY };
@@ -355,33 +372,32 @@ function createSavePoint(obj, x, y, player) {
     "save_point",
   ]);
   currentInteriorObjects.push(savePoint);
-  
+
   player.onCollide(obj.name, () => {
     if (player.isInDialogue) return;
     player.isInDialogue = true;
-    
+
     // 休息并存档
     healPlayer(gameState.player.maxHp);
-    gameState.player.mp = gameState.player.maxMp;
+    restoreMana(gameState.player.maxMp);
     saveGame(0);
-    
-    displayDialogue({
-      speaker: "系统",
-      lines: [
-        "你舒服地躺在床上休息...",
-        "HP和MP完全恢复了！",
-        "游戏已自动存档。"
-      ]
-    }, () => { 
-      player.isInDialogue = false;
-      updateUI();
-    });
+
+    displayDialogue(
+      {
+        speaker: "系统",
+        lines: ["你舒服地躺在床上休息...", "HP和MP完全恢复了！", "游戏已自动存档。"],
+      },
+      () => {
+        player.isInDialogue = false;
+        updateUI();
+      }
+    );
   });
 }
 
 // 清除室内对象
 function clearInteriorObjects() {
-  currentInteriorObjects.forEach(obj => {
+  currentInteriorObjects.forEach((obj) => {
     if (obj && obj.destroy) {
       k.destroy(obj);
     }
@@ -393,14 +409,34 @@ function clearInteriorObjects() {
 function createInteriorBoundaries(width, height, tileSize, scale) {
   const mapWidth = width * tileSize * scale;
   const mapHeight = height * tileSize * scale;
-  
+
   const boundaries = [
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }), k.body({ isStatic: true }), k.pos(0, -10), "boundary"]),
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }), k.body({ isStatic: true }), k.pos(0, mapHeight), "boundary"]),
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }), k.body({ isStatic: true }), k.pos(-10, 0), "boundary"]),
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }), k.body({ isStatic: true }), k.pos(mapWidth, 0), "boundary"]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }),
+      k.body({ isStatic: true }),
+      k.pos(0, -10),
+      "boundary",
+    ]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }),
+      k.body({ isStatic: true }),
+      k.pos(0, mapHeight),
+      "boundary",
+    ]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }),
+      k.body({ isStatic: true }),
+      k.pos(-10, 0),
+      "boundary",
+    ]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }),
+      k.body({ isStatic: true }),
+      k.pos(mapWidth, 0),
+      "boundary",
+    ]),
   ];
-  
+
   currentInteriorObjects.push(...boundaries);
 }
 
@@ -415,7 +451,7 @@ function showInteriorName(name) {
     k.fixed(),
     k.z(200),
   ]);
-  
+
   let timer = 2;
   label.onUpdate(() => {
     timer -= k.dt();
@@ -461,17 +497,18 @@ export function enterInterior(interiorName, returnArea, returnX, returnY) {
 function renderMiCasaMap(mapContainer, interior, tileSize) {
   // 地板/墙壁瓦片映射
   const floorFrame = MC_FLOORS.woodLight.center; // 木地板
-  const wallFrame = MC_FLOORS.wallMid.center;    // 墙壁
-  
+
   for (let y = 0; y < interior.height; y++) {
     for (let x = 0; x < interior.width; x++) {
-      const isWall = interior.wallMap ? interior.wallMap[y][x] === 1 : interior.floorTiles[y][x] === 1;
-      
+      const isWall = interior.wallMap
+        ? interior.wallMap[y][x] === 1
+        : interior.floorTiles[y][x] === 1;
+
       // 渲染地板或墙壁
       if (isWall) {
         // 墙壁 - 根据位置选择不同的墙壁瓦片
-        let frame = wallFrame;
-        
+        let frame;
+
         // 判断是否是顶部墙
         if (y === 0) {
           if (x === 0) frame = MC_FLOORS.wallTop.left;
@@ -490,13 +527,13 @@ function renderMiCasaMap(mapContainer, interior, tileSize) {
           else if (x === interior.width - 1) frame = MC_FLOORS.wallMid.right;
           else frame = MC_FLOORS.wallMid.center;
         }
-        
+
         mapContainer.add([
           k.sprite("mc-floors-walls", { frame: frame }),
           k.pos(x * tileSize, y * tileSize),
           k.z(0),
         ]);
-        
+
         // 墙壁碰撞
         mapContainer.add([
           k.area({ shape: new k.Rect(k.vec2(0), tileSize, tileSize) }),
@@ -513,7 +550,7 @@ function renderMiCasaMap(mapContainer, interior, tileSize) {
         } else if (Math.random() < 0.05) {
           frame = MC_FLOORS.woodLight.variant2;
         }
-        
+
         mapContainer.add([
           k.sprite("mc-floors-walls", { frame: frame }),
           k.pos(x * tileSize, y * tileSize),
@@ -526,14 +563,14 @@ function renderMiCasaMap(mapContainer, interior, tileSize) {
 
 // 加载 Mi-Casa 风格对象
 function loadMiCasaObjects(mcObjects, player, scale, tileSize) {
-  mcObjects.forEach(obj => {
+  mcObjects.forEach((obj) => {
     const worldX = obj.x * tileSize * scale;
     const worldY = obj.y * tileSize * scale;
     const zIndex = obj.z || 4;
-    
+
     // 根据对象类型选择精灵表
     const spriteName = obj.sprite || "mc-furniture1";
-    
+
     const gameObj = k.add([
       k.sprite(spriteName, { frame: obj.frame }),
       k.pos(worldX, worldY),
@@ -542,13 +579,13 @@ function loadMiCasaObjects(mcObjects, player, scale, tileSize) {
       k.z(zIndex),
       "mc-object",
     ]);
-    
+
     // 如果对象是实体，添加碰撞
     if (obj.solid) {
       gameObj.use(k.area({ shape: new k.Rect(k.vec2(0), tileSize * 0.8, tileSize * 0.8) }));
       gameObj.use(k.body({ isStatic: true }));
     }
-    
+
     currentInteriorObjects.push(gameObj);
   });
 }

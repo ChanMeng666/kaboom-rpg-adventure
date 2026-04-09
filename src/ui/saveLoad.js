@@ -1,6 +1,6 @@
 // 存档读取UI系统
 import { k } from "../kaboomCtx";
-import { gameState, saveGame, loadGame, hasSaveData, deleteSave, resetGame } from "../gameState";
+import { saveGame, loadGame, hasSaveData, deleteSave } from "../gameState";
 import { showAchievementPanel } from "./achievements";
 
 // 存档面板状态
@@ -114,11 +114,11 @@ export function createSaveLoadUI() {
       </div>
     </div>
   `;
-  
+
   const container = document.createElement("div");
   container.innerHTML = html;
   document.body.appendChild(container);
-  
+
   // 绑定事件
   document.getElementById("btn-save-close").addEventListener("click", closeSavePanel);
   document.getElementById("btn-resume").addEventListener("click", closeGameMenu);
@@ -126,7 +126,7 @@ export function createSaveLoadUI() {
   document.getElementById("btn-load").addEventListener("click", openSavePanel.bind(null, "load"));
   document.getElementById("btn-achievements").addEventListener("click", showAchievements);
   document.getElementById("btn-quit").addEventListener("click", quitToTitle);
-  
+
   // ESC 键打开菜单
   k.onKeyPress("escape", () => {
     if (saveMenuOpen) {
@@ -160,7 +160,7 @@ function openSavePanel(mode) {
   currentMode = mode;
   saveMenuOpen = true;
   closeGameMenu();
-  
+
   const panel = document.getElementById("save-panel");
   if (panel) {
     panel.style.display = "block";
@@ -181,24 +181,24 @@ function closeSavePanel() {
 function refreshSaveSlots() {
   const container = document.getElementById("save-slots");
   if (!container) return;
-  
+
   container.innerHTML = "";
-  
+
   // 3个存档槽
   for (let i = 0; i < 3; i++) {
     const hasData = hasSaveData(i);
     let saveInfo = "空槽位";
-    
+
     if (hasData) {
       try {
         const data = JSON.parse(localStorage.getItem(`pixelRPG_save_${i}`));
         const date = new Date(data.savedAt).toLocaleString();
         saveInfo = `Lv.${data.player?.level || 1} | ${data.player?.gold || 0}G | ${date}`;
-      } catch (e) {
+      } catch {
         saveInfo = "数据损坏";
       }
     }
-    
+
     const slot = document.createElement("div");
     slot.style.cssText = `
       padding: 15px;
@@ -209,14 +209,16 @@ function refreshSaveSlots() {
       justify-content: space-between;
       align-items: center;
     `;
-    
+
     slot.innerHTML = `
       <div>
         <div style="color: #60a5fa; font-weight: bold;">存档 ${i + 1}</div>
         <div style="color: #9ca3af; font-size: 12px; margin-top: 4px;">${saveInfo}</div>
       </div>
       <div style="display: flex; gap: 5px;">
-        ${currentMode === "save" ? `
+        ${
+          currentMode === "save"
+            ? `
           <button class="slot-btn save-btn" data-slot="${i}" style="
             padding: 8px 15px;
             background: #3b82f6;
@@ -225,7 +227,9 @@ function refreshSaveSlots() {
             color: white;
             cursor: pointer;
           ">保存</button>
-        ` : hasData ? `
+        `
+            : hasData
+              ? `
           <button class="slot-btn load-btn" data-slot="${i}" style="
             padding: 8px 15px;
             background: #22c55e;
@@ -242,17 +246,19 @@ function refreshSaveSlots() {
             color: white;
             cursor: pointer;
           ">删除</button>
-        ` : `
+        `
+              : `
           <span style="color: #6b7280;">无存档</span>
-        `}
+        `
+        }
       </div>
     `;
-    
+
     container.appendChild(slot);
   }
-  
+
   // 绑定按钮事件
-  container.querySelectorAll(".save-btn").forEach(btn => {
+  container.querySelectorAll(".save-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const slot = parseInt(e.target.dataset.slot);
       if (hasSaveData(slot)) {
@@ -263,8 +269,8 @@ function refreshSaveSlots() {
       refreshSaveSlots();
     });
   });
-  
-  container.querySelectorAll(".load-btn").forEach(btn => {
+
+  container.querySelectorAll(".load-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const slot = parseInt(e.target.dataset.slot);
       if (loadGame(slot)) {
@@ -276,8 +282,8 @@ function refreshSaveSlots() {
       }
     });
   });
-  
-  container.querySelectorAll(".delete-btn").forEach(btn => {
+
+  container.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const slot = parseInt(e.target.dataset.slot);
       if (confirm("确定要删除这个存档吗？")) {

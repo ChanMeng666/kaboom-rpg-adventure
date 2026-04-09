@@ -16,47 +16,41 @@ import { createAchievementUI } from "./ui/achievements";
 
 // 初始化游戏
 async function initGame() {
-  console.log("🎮 Kaboom RPG 游戏初始化中...");
-  
+  console.log("[Game] Initializing...");
+
   try {
-    // 加载所有精灵资源
     await loadAllSprites();
-    console.log("✅ 精灵资源加载完成");
-    
-    // 注册所有场景
+    console.log("[Game] Sprites loaded");
+
     createStartScene();
     createWorldScene();
     createBattleScene();
     createInteriorScene();
     createFishingScene();
     createMiningScene();
-    console.log("✅ 场景注册完成");
-    
-    // 初始化UI系统
+    console.log("[Game] Scenes registered");
+
     createInventoryUI();
     createShopUI();
     createQuestUI();
     createSaveLoadUI();
     createAchievementUI();
-    console.log("✅ UI系统初始化完成");
-    
-    // 初始化任务系统
+    console.log("[Game] UI initialized");
+
     initQuestSystem();
-    console.log("✅ 任务系统初始化完成");
-    
-    // 启动开始场景
+    console.log("[Game] Quest system initialized");
+
     k.go("start");
-    console.log("✅ 游戏启动成功!");
-    
+    console.log("[Game] Started successfully");
   } catch (error) {
-    console.error("❌ 游戏初始化失败:", error);
-    
+    console.error("[Game] Initialization failed:", error);
+
     // 显示错误信息
     k.add([
-      k.text("游戏加载失败\n请刷新页面重试", { 
+      k.text("游戏加载失败\n请刷新页面重试", {
         size: 24,
         width: k.width() - 40,
-        align: "center"
+        align: "center",
       }),
       k.pos(k.width() / 2, k.height() / 2),
       k.anchor("center"),

@@ -1,8 +1,7 @@
 // 挖矿小游戏
 import { k } from "../kaboomCtx";
-import { gameState, addToInventory, addGold, addExp } from "../gameState";
+import { addToInventory, addGold, addExp } from "../gameState";
 import { updateQuestProgress } from "../quest/questSystem";
-import { ROCKS } from "../sprites";
 
 // 矿石类型
 const ORE_TYPES = [
@@ -13,7 +12,7 @@ const ORE_TYPES = [
 ];
 
 // 挖矿状态
-let miningState = {
+const miningState = {
   active: false,
   ores: [],
   totalMined: 0,
@@ -26,10 +25,9 @@ export function createMiningScene() {
   k.scene("mining", () => {
     // 设置背景
     k.setBackground(k.Color.fromHex("#1a1a2e"));
-    
+
     const width = k.width();
-    const height = k.height();
-    
+
     // 标题
     k.add([
       k.text("⛏️ 挖矿", { size: 32 }),
@@ -38,7 +36,7 @@ export function createMiningScene() {
       k.color(255, 255, 255),
       k.z(10),
     ]);
-    
+
     // 说明
     k.add([
       k.text("点击矿石进行挖掘！", { size: 16 }),
@@ -47,7 +45,7 @@ export function createMiningScene() {
       k.color(180, 180, 180),
       k.z(10),
     ]);
-    
+
     // 分数显示
     const scoreText = k.add([
       k.text(`挖掘: ${miningState.totalMined} | 连击: ${miningState.combo}`, { size: 14 }),
@@ -55,7 +53,7 @@ export function createMiningScene() {
       k.color(255, 255, 255),
       k.z(10),
     ]);
-    
+
     // 退出按钮
     const exitBtn = k.add([
       k.rect(100, 40),
@@ -65,7 +63,7 @@ export function createMiningScene() {
       k.area(),
       k.z(10),
     ]);
-    
+
     k.add([
       k.text("退出", { size: 16 }),
       k.pos(width - 70, 40),
@@ -73,29 +71,29 @@ export function createMiningScene() {
       k.color(255, 255, 255),
       k.z(11),
     ]);
-    
+
     exitBtn.onClick(() => {
       resetMining();
       k.go("world");
     });
-    
+
     // 挖矿区域
     const gridX = 50;
     const gridY = 100;
     const gridCols = 6;
     const gridRows = 4;
     const cellSize = 80;
-    
+
     // 生成矿石
     function generateOres() {
       // 清除旧矿石
-      miningState.ores.forEach(ore => {
+      miningState.ores.forEach((ore) => {
         if (ore.sprite) k.destroy(ore.sprite);
         if (ore.hpBar) k.destroy(ore.hpBar);
         if (ore.hpBarBg) k.destroy(ore.hpBarBg);
       });
       miningState.ores = [];
-      
+
       // 生成新矿石
       for (let row = 0; row < gridRows; row++) {
         for (let col = 0; col < gridCols; col++) {
@@ -104,14 +102,14 @@ export function createMiningScene() {
             const oreType = getRandomOreType();
             const x = gridX + col * cellSize + cellSize / 2;
             const y = gridY + row * cellSize + cellSize / 2;
-            
+
             const ore = {
               ...oreType,
               currentHp: oreType.hp,
               row,
               col,
             };
-            
+
             // 矿石精灵 (使用矩形代替，因为我们没有特定的矿石帧)
             ore.sprite = k.add([
               k.rect(60, 60),
@@ -122,7 +120,7 @@ export function createMiningScene() {
               k.z(5),
               `ore_${row}_${col}`,
             ]);
-            
+
             // HP条背景
             ore.hpBarBg = k.add([
               k.rect(50, 6),
@@ -130,7 +128,7 @@ export function createMiningScene() {
               k.color(50, 50, 50),
               k.z(6),
             ]);
-            
+
             // HP条
             ore.hpBar = k.add([
               k.rect(50, 6),
@@ -138,7 +136,7 @@ export function createMiningScene() {
               k.color(100, 200, 100),
               k.z(7),
             ]);
-            
+
             // 矿石名称
             ore.label = k.add([
               k.text(oreType.name, { size: 10 }),
@@ -147,45 +145,45 @@ export function createMiningScene() {
               k.color(255, 255, 255),
               k.z(8),
             ]);
-            
+
             // 点击事件
             ore.sprite.onClick(() => {
               mineOre(ore, x, y);
             });
-            
+
             miningState.ores.push(ore);
           }
         }
       }
-      
+
       // 如果没有矿石，至少生成一个
       if (miningState.ores.length === 0) {
         generateOres();
       }
     }
-    
+
     // 挖掘矿石
     function mineOre(ore, x, y) {
       ore.currentHp--;
-      
+
       // 更新HP条
       const hpRatio = ore.currentHp / ore.hp;
       ore.hpBar.width = 50 * hpRatio;
-      
+
       // 颜色变化
       if (hpRatio <= 0.3) {
         ore.hpBar.color = k.Color.fromHex("#ef4444");
       } else if (hpRatio <= 0.6) {
         ore.hpBar.color = k.Color.fromHex("#eab308");
       }
-      
+
       // 震动效果
       const originalX = ore.sprite.pos.x;
       ore.sprite.pos.x += (Math.random() - 0.5) * 10;
       k.wait(0.05).then(() => {
         ore.sprite.pos.x = originalX;
       });
-      
+
       // 粒子效果
       for (let i = 0; i < 3; i++) {
         const particle = k.add([
@@ -204,21 +202,21 @@ export function createMiningScene() {
           if (particle.opacity <= 0) k.destroy(particle);
         });
       }
-      
+
       // 检查是否挖完
       if (ore.currentHp <= 0) {
         // 收集矿石
         miningState.totalMined++;
         miningState.combo++;
-        
+
         // 奖励
         addExp(ore.exp * (1 + miningState.combo * 0.1));
         addGold(ore.gold);
         addToInventory({ type: ore.type, name: ore.type });
-        
+
         // 更新任务进度
         updateQuestProgress("collect", ore.type, 1);
-        
+
         // 显示获得文字
         const getText = k.add([
           k.text(`+${ore.name}`, { size: 14 }),
@@ -233,22 +231,22 @@ export function createMiningScene() {
           getText.opacity -= k.dt();
           if (getText.opacity <= 0) k.destroy(getText);
         });
-        
+
         // 移除矿石
         k.destroy(ore.sprite);
         k.destroy(ore.hpBar);
         k.destroy(ore.hpBarBg);
         k.destroy(ore.label);
-        
+
         // 从数组移除
         const index = miningState.ores.indexOf(ore);
         if (index > -1) {
           miningState.ores.splice(index, 1);
         }
-        
+
         // 更新显示
         scoreText.text = `挖掘: ${miningState.totalMined} | 连击: ${miningState.combo}`;
-        
+
         // 检查是否需要生成新矿石
         if (miningState.ores.length === 0) {
           k.wait(0.5).then(() => {
@@ -257,10 +255,10 @@ export function createMiningScene() {
         }
       }
     }
-    
+
     // 初始化矿石
     generateOres();
-    
+
     // 连击重置计时器
     let comboTimer = 0;
     k.onUpdate(() => {
@@ -271,12 +269,12 @@ export function createMiningScene() {
         comboTimer = 0;
       }
     });
-    
+
     // 每次点击重置计时器
     k.onClick(() => {
       comboTimer = 0;
     });
-    
+
     // ESC 退出
     k.onKeyPress("escape", () => {
       resetMining();
@@ -289,14 +287,14 @@ export function createMiningScene() {
 function getRandomOreType() {
   const roll = Math.random();
   let cumulative = 0;
-  
+
   for (const ore of ORE_TYPES) {
     cumulative += ore.chance;
     if (roll <= cumulative) {
       return ore;
     }
   }
-  
+
   return ORE_TYPES[0];
 }
 

@@ -14,43 +14,76 @@ export const SPRITESHEET_CONFIG = {
 // ========== 第0-2行: 橙色/沙地瓦片 ==========
 export const SAND_TILES = {
   // 完整的9宫格边缘
-  topLeft: 0, top: 1, topRight: 2,
-  left: 39, center: 40, right: 41,
-  bottomLeft: 78, bottom: 79, bottomRight: 80,
+  topLeft: 0,
+  top: 1,
+  topRight: 2,
+  left: 39,
+  center: 40,
+  right: 41,
+  bottomLeft: 78,
+  bottom: 79,
+  bottomRight: 80,
   // 内角
-  innerTopLeft: 3, innerTopRight: 4,
-  innerBottomLeft: 42, innerBottomRight: 43,
+  innerTopLeft: 3,
+  innerTopRight: 4,
+  innerBottomLeft: 42,
+  innerBottomRight: 43,
   // 单独瓦片
   single: 5,
   // 变体
-  variant1: 44, variant2: 45, variant3: 81, variant4: 82,
+  variant1: 44,
+  variant2: 45,
+  variant3: 81,
+  variant4: 82,
 };
 
 // ========== 第3-5行: 草地瓦片 ==========
 export const GRASS_TILES = {
-  topLeft: 117, top: 118, topRight: 119,
-  left: 156, center: 157, right: 158,
-  bottomLeft: 195, bottom: 196, bottomRight: 197,
-  innerTopLeft: 120, innerTopRight: 121,
-  innerBottomLeft: 159, innerBottomRight: 160,
+  topLeft: 117,
+  top: 118,
+  topRight: 119,
+  left: 156,
+  center: 157,
+  right: 158,
+  bottomLeft: 195,
+  bottom: 196,
+  bottomRight: 197,
+  innerTopLeft: 120,
+  innerTopRight: 121,
+  innerBottomLeft: 159,
+  innerBottomRight: 160,
   single: 122,
 };
 
 // ========== 第3-5行: 蓝色/紫色地面 ==========
 export const BLUE_TILES = {
-  topLeft: 123, top: 124, topRight: 125,
-  left: 162, center: 163, right: 164,
-  bottomLeft: 201, bottom: 202, bottomRight: 203,
+  topLeft: 123,
+  top: 124,
+  topRight: 125,
+  left: 162,
+  center: 163,
+  right: 164,
+  bottomLeft: 201,
+  bottom: 202,
+  bottomRight: 203,
 };
 
 // ========== 第1-2行右侧: 金色路径 ==========
 export const GOLD_TILES = {
-  topLeft: 27, top: 28, topRight: 29,
-  left: 66, center: 67, right: 68,
-  bottomLeft: 105, bottom: 106, bottomRight: 107,
+  topLeft: 27,
+  top: 28,
+  topRight: 29,
+  left: 66,
+  center: 67,
+  right: 68,
+  bottomLeft: 105,
+  bottom: 106,
+  bottomRight: 107,
   // 额外变体
-  corner1: 30, corner2: 31,
-  edge1: 69, edge2: 70,
+  corner1: 30,
+  corner2: 31,
+  edge1: 69,
+  edge2: 70,
 };
 
 // ========== 水面瓦片 ==========
@@ -60,16 +93,16 @@ export const GOLD_TILES = {
 // 请用 /debug-atlas.html 验证实际内容。
 export const WATER_TILES = {
   // 使用蓝色地面瓦片作为水面替代
-  shallow: [BLUE_TILES.center],    // 163 - 蓝色地面中心
-  deep: [BLUE_TILES.top],          // 124 - 蓝色地面顶部 (深色变体)
+  shallow: [BLUE_TILES.center], // 163 - 蓝色地面中心
+  deep: [BLUE_TILES.top], // 124 - 蓝色地面顶部 (深色变体)
   // 水边缘 - 使用蓝色9宫格边缘
-  edgeTop: BLUE_TILES.top,         // 124
-  edgeBottom: BLUE_TILES.bottom,   // 202
-  edgeLeft: BLUE_TILES.left,       // 162
-  edgeRight: BLUE_TILES.right,     // 164
+  edgeTop: BLUE_TILES.top, // 124
+  edgeBottom: BLUE_TILES.bottom, // 202
+  edgeLeft: BLUE_TILES.left, // 162
+  edgeRight: BLUE_TILES.right, // 164
   // 角落
-  cornerTopLeft: BLUE_TILES.topLeft,       // 123
-  cornerTopRight: BLUE_TILES.topRight,     // 125
+  cornerTopLeft: BLUE_TILES.topLeft, // 123
+  cornerTopRight: BLUE_TILES.topRight, // 125
   cornerBottomLeft: BLUE_TILES.bottomLeft, // 201
   cornerBottomRight: BLUE_TILES.bottomRight, // 203 (was 132)
   // 瀑布 - 无专用帧，使用蓝色变体
@@ -80,47 +113,86 @@ export const WATER_TILES = {
 export const PLANTS = {
   // 蛋/果实 (彩色)
   eggs: {
-    red: 6, orange: 7, yellow: 8, green: 9, blue: 10, purple: 11, pink: 12,
+    red: 6,
+    orange: 7,
+    yellow: 8,
+    green: 9,
+    blue: 10,
+    purple: 11,
+    pink: 12,
   },
   // 花朵
   flowers: {
-    red: 45, orange: 46, yellow: 47, pink: 48,
-    tulipRed: 84, tulipOrange: 85, tulipYellow: 86, tulipPink: 87,
+    red: 45,
+    orange: 46,
+    yellow: 47,
+    pink: 48,
+    tulipRed: 84,
+    tulipOrange: 85,
+    tulipYellow: 86,
+    tulipPink: 87,
   },
   // 灌木
   bushes: {
-    small: 83, medium: 122, large: 161,
-    round1: 49, round2: 50, round3: 88, round4: 89,
+    small: 83,
+    medium: 122,
+    large: 161,
+    round1: 49,
+    round2: 50,
+    round3: 88,
+    round4: 89,
   },
   // 蘑菇
   mushrooms: {
-    red: 51, brown: 90, purple: 129, blue: 168,
-    cluster1: 167, cluster2: 206,
+    red: 51,
+    brown: 90,
+    purple: 129,
+    blue: 168,
+    cluster1: 167,
+    cluster2: 206,
   },
   // 草丛
   grass: {
-    short1: 126, short2: 127, short3: 165, short4: 166,
-    tall1: 204, tall2: 205, tall3: 243, tall4: 244,
+    short1: 126,
+    short2: 127,
+    short3: 165,
+    short4: 166,
+    tall1: 204,
+    tall2: 205,
+    tall3: 243,
+    tall4: 244,
   },
 };
 
 // ========== 第6行: 版本号和数字 ==========
 export const UI_NUMBERS = {
   version: 234, // "v.1"
-  num0: 235, num1: 236, num2: 237, num3: 238, num4: 239, num5: 240,
+  num0: 235,
+  num1: 236,
+  num2: 237,
+  num3: 238,
+  num4: 239,
+  num5: 240,
 };
 
 // ========== 第6-7行: 国王和特殊角色 ==========
 export const SPECIAL_CHARS = {
   king: {
-    front: 269, back: 270, side: 308, crown: 271,
+    front: 269,
+    back: 270,
+    side: 308,
+    crown: 271,
   },
   statue: 272,
 };
 
 // ========== 第7行: 心形和UI ==========
 export const UI_HEARTS = {
-  full: 273, threeQuarter: 274, half: 275, quarter: 276, empty: 277,
+  full: 273,
+  threeQuarter: 274,
+  half: 275,
+  quarter: 276,
+  empty: 277,
 };
 
 // ========== 第7-8行: 道具图标 ==========
@@ -129,51 +201,89 @@ export const UI_HEARTS = {
 // ⚠️ 用 /debug-atlas.html 验证 axe/bow/key 的实际位置。
 export const ITEMS = {
   // 武器 - 已验证区域 (row 7-8, cols 0-6)
-  shield: 278, shieldGold: 279,             // row 7, col 5-6
-  sword: 316, swordGold: 317, swordFire: 318, // row 8, col 4-6
-  axe: 319, axeGold: 320,                   // row 8, col 7-8 ⚠️ 需验证
-  bow: 321, bowGold: 322,                   // row 8, col 9-10 ⚠️ 需验证
+  shield: 278,
+  shieldGold: 279, // row 7, col 5-6
+  sword: 316,
+  swordGold: 317,
+  swordFire: 318, // row 8, col 4-6
+  axe: 319,
+  axeGold: 320, // row 8, col 7-8 ⚠️ 需验证
+  bow: 321,
+  bowGold: 322, // row 8, col 9-10 ⚠️ 需验证
   // 药水 - 已验证 (row 8, cols 0-3)
-  potionRed: 312, potionBlue: 313, potionGreen: 314, potionYellow: 315,
+  potionRed: 312,
+  potionBlue: 313,
+  potionGreen: 314,
+  potionYellow: 315,
   // 钱币 - 使用彩蛋帧替代 (避免与树木 row 9 冲突)
-  coin: 8, coinStack: 7,                    // eggs.yellow, eggs.orange
+  coin: 8,
+  coinStack: 7, // eggs.yellow, eggs.orange
   // 宝石 - 使用彩蛋帧替代 (避免与树木 row 10 冲突)
-  gemRed: 6, gemBlue: 10, gemGreen: 9, gemYellow: 11, // eggs 各色
+  gemRed: 6,
+  gemBlue: 10,
+  gemGreen: 9,
+  gemYellow: 11, // eggs 各色
   // 钥匙 - 移到 row 7 无冲突位置 ⚠️ 需验证
-  keyBronze: 280, keySilver: 281, keyGold: 282, // row 7, col 7-9
+  keyBronze: 280,
+  keySilver: 281,
+  keyGold: 282, // row 7, col 7-9
   // 其他 ⚠️ 需验证
-  scroll: 467, book: 468,                   // row 11-12 边缘
-  ring: 506, amulet: 507,                   // row 12-13 边缘
+  scroll: 467,
+  book: 468, // row 11-12 边缘
+  ring: 506,
+  amulet: 507, // row 12-13 边缘
 };
 
 // ========== 第8-11行: 房屋和建筑 ==========
 export const BUILDINGS = {
   // 墙壁 (浅色)
   wallLight: {
-    topLeft: 302, top: 303, topRight: 304,
-    left: 341, center: 342, right: 343,
-    bottomLeft: 380, bottom: 381, bottomRight: 382,
+    topLeft: 302,
+    top: 303,
+    topRight: 304,
+    left: 341,
+    center: 342,
+    right: 343,
+    bottomLeft: 380,
+    bottom: 381,
+    bottomRight: 382,
   },
   // 墙壁 (深色)
   wallDark: {
-    topLeft: 305, top: 306, topRight: 307,
-    left: 344, center: 345, right: 346,
-    bottomLeft: 383, bottom: 384, bottomRight: 385,
+    topLeft: 305,
+    top: 306,
+    topRight: 307,
+    left: 344,
+    center: 345,
+    right: 346,
+    bottomLeft: 383,
+    bottom: 384,
+    bottomRight: 385,
   },
   // 屋顶
   roof: {
-    peakLeft: 224, peak: 225, peakRight: 226,
-    left: 263, center: 264, right: 265,
-    edgeLeft: 302, edgeRight: 304,
+    peakLeft: 224,
+    peak: 225,
+    peakRight: 226,
+    left: 263,
+    center: 264,
+    right: 265,
+    edgeLeft: 302,
+    edgeRight: 304,
   },
   // 门
   door: {
-    closed: 227, open: 266, double: 228,
+    closed: 227,
+    open: 266,
+    double: 228,
   },
   // 窗户
   window: {
-    small: 229, large: 268, round: 267,
-    shutterOpen: 306, shutterClosed: 307,
+    small: 229,
+    large: 268,
+    round: 267,
+    shutterOpen: 306,
+    shutterClosed: 307,
   },
   // 烟囱
   chimney: 230,
@@ -201,53 +311,79 @@ export const TREES = {
 export const FURNITURE = {
   // 床 (2x2)
   bed: {
-    topLeft: 463, topRight: 464,
-    bottomLeft: 502, bottomRight: 503,
+    topLeft: 463,
+    topRight: 464,
+    bottomLeft: 502,
+    bottomRight: 503,
     // 单人床
-    singleTop: 465, singleBottom: 504,
+    singleTop: 465,
+    singleBottom: 504,
   },
   // 桌子
   table: {
-    small: 466, medium: 467, large: 505,
-    round: 506, fancy: 468,
+    small: 466,
+    medium: 467,
+    large: 505,
+    round: 506,
+    fancy: 468,
   },
   // 椅子
   chair: {
-    front: 469, back: 508, left: 507, right: 509,
-    stool: 470, throne: 510,
+    front: 469,
+    back: 508,
+    left: 507,
+    right: 509,
+    stool: 470,
+    throne: 510,
   },
   // 柜子和架子
   cabinet: {
-    small: 471, large: 472,
-    bookshelf: 511, bookshelfFull: 512,
+    small: 471,
+    large: 472,
+    bookshelf: 511,
+    bookshelfFull: 512,
     wardrobe: 473,
   },
   // 地毯 (3x3)
   rug: {
-    topLeft: 546, top: 547, topRight: 548,
-    left: 585, center: 586, right: 587,
-    bottomLeft: 624, bottom: 625, bottomRight: 626,
+    topLeft: 546,
+    top: 547,
+    topRight: 548,
+    left: 585,
+    center: 586,
+    right: 587,
+    bottomLeft: 624,
+    bottom: 625,
+    bottomRight: 626,
     // 小地毯
     small: 549,
   },
   // 盆栽
   plant: {
-    small: 474, medium: 513, large: 552,
-    cactus: 475, flower: 514,
+    small: 474,
+    medium: 513,
+    large: 552,
+    cactus: 475,
+    flower: 514,
   },
   // 灯具
   lamp: {
-    table: 476, floor: 515, chandelier: 554,
+    table: 476,
+    floor: 515,
+    chandelier: 554,
   },
   // 壁炉
   fireplace: {
-    off: 553, on: 592,
+    off: 553,
+    on: 592,
   },
   // 时钟
   clock: 477,
   // 画框
   painting: {
-    small: 516, medium: 555, large: 594,
+    small: 516,
+    medium: 555,
+    large: 594,
   },
   // 镜子
   mirror: 517,
@@ -259,15 +395,21 @@ export const FURNITURE = {
 export const FENCES = {
   // 木栅栏
   wood: {
-    horizontal: 518, vertical: 557,
-    cornerTopLeft: 519, cornerTopRight: 520,
-    cornerBottomLeft: 558, cornerBottomRight: 559,
-    post: 521, gate: 560,
+    horizontal: 518,
+    vertical: 557,
+    cornerTopLeft: 519,
+    cornerTopRight: 520,
+    cornerBottomLeft: 558,
+    cornerBottomRight: 559,
+    post: 521,
+    gate: 560,
   },
   // 石墙
   stone: {
-    horizontal: 596, vertical: 597,
-    corner: 598, pillar: 599,
+    horizontal: 596,
+    vertical: 597,
+    corner: 598,
+    pillar: 599,
   },
 };
 
@@ -275,27 +417,36 @@ export const FENCES = {
 export const INTERACTABLES = {
   // 宝箱
   chest: {
-    closed: 347, open: 386, locked: 348, golden: 349,
-    small: 387, mimic: 388,
+    closed: 347,
+    open: 386,
+    locked: 348,
+    golden: 349,
+    small: 387,
+    mimic: 388,
   },
   // 箱子和桶
-  crate: { normal: 427, broken: 466 },    // 修复: crate 不再与 pot 冲突
+  crate: { normal: 427, broken: 466 }, // 修复: crate 不再与 pot 冲突
   barrel: { normal: 426, open: 465 },
   pot: { normal: 350, broken: 389 },
   // 告示牌
   sign: {
-    wood: 231, stone: 270, arrow: 309,
+    wood: 231,
+    stone: 270,
+    arrow: 309,
   },
   // 水井
   well: { top: 232, bottom: 271 },
   // 火把和光源 (静态帧，原动画帧跨越不相关区域)
   torch: {
-    wall: 233,   // row 5, col 38 ⚠️ 需用 debug-atlas.html 验证
-    stand: 310,  // row 7, col 37 ⚠️ 需验证
+    wall: 233, // row 5, col 38 ⚠️ 需用 debug-atlas.html 验证
+    stand: 310, // row 7, col 37 ⚠️ 需验证
   },
   // 旗帜 - 移到 row 10 cols 6-9 (避免与 hearts/potions/trees 冲突)
   flag: {
-    red: 396, blue: 397, green: 398, yellow: 399,  // ⚠️ 需验证
+    red: 396,
+    blue: 397,
+    green: 398,
+    yellow: 399, // ⚠️ 需验证
   },
   // 路牌
   signpost: 274,
@@ -342,33 +493,33 @@ export const CHARACTERS = {
     up: [1014, 1015, 1016, 1017],
   },
   // 不同颜色/样式的角色
-  npc1: { down: 940, side: 979, up: 1018 },  // 蓝色
-  npc2: { down: 944, side: 983, up: 1022 },  // 绿色
-  npc3: { down: 948, side: 987, up: 1026 },  // 紫色
-  npc4: { down: 952, side: 991, up: 1030 },  // 红色
-  npc5: { down: 956, side: 995, up: 1034 },  // 棕色
-  npc6: { down: 960, side: 999, up: 1038 },  // 灰色
+  npc1: { down: 940, side: 979, up: 1018 }, // 蓝色
+  npc2: { down: 944, side: 983, up: 1022 }, // 绿色
+  npc3: { down: 948, side: 987, up: 1026 }, // 紫色
+  npc4: { down: 952, side: 991, up: 1030 }, // 红色
+  npc5: { down: 956, side: 995, up: 1034 }, // 棕色
+  npc6: { down: 960, side: 999, up: 1038 }, // 灰色
   npc7: { down: 964, side: 1003, up: 1042 }, // 金色
   npc8: { down: 968, side: 1007, up: 1046 }, // 黑色
-  
+
   // 第25行 (帧1053起) - 不同服装
   villager1: { down: 1053, side: 1092, up: 1131 },
   villager2: { down: 1057, side: 1096, up: 1135 },
   villager3: { down: 1061, side: 1100, up: 1139 },
   villager4: { down: 1065, side: 1104, up: 1143 },
-  
+
   // 第26行 - 特殊角色
   merchant: { down: 1069, side: 1108, up: 1147 },
   guard: { down: 1073, side: 1112, up: 1151 },
   elder: { down: 1077, side: 1116, up: 1155 },
   child: { down: 1081, side: 1120, up: 1159 },
-  
+
   // 第27行 - 更多角色
   knight: { down: 1085, side: 1124, up: 1163 },
   mage: { down: 1089, side: 1128, up: 1167 },
   archer: { down: 1093, side: 1132, up: 1171 },
   thief: { down: 1097, side: 1136, up: 1175 },
-  
+
   // 第28-30行 - 更多变体
   farmer: { down: 1170, side: 1209, up: 1248 },
   fisher: { down: 1174, side: 1213, up: 1252 },
@@ -398,7 +549,7 @@ export const ANIMATIONS = {
 // ========== Mi-Casa 资产配置 ==========
 // 角色精灵表 (Itty Bitty 风格)
 export const MI_CASA_CHARS_CONFIG = {
-  path: "./mi-casa/Itty_Bitty_6_Walk_sprites.png",
+  path: "./tilesets/interior/Itty_Bitty_6_Walk_sprites.png",
   sliceX: 15,
   sliceY: 8,
   tileSize: 16,
@@ -421,39 +572,39 @@ export const MI_CASA_CHAR_ANIMS = {
 // 室内 Tileset 配置
 export const INTERIOR_TILESETS = {
   floorsAndWalls: {
-    path: "./mi-casa/TopDownHouse_FloorsAndWalls.png",
-    sliceX: 18,  // 288px / 16px
-    sliceY: 9,   // 144px / 16px
+    path: "./tilesets/interior/TopDownHouse_FloorsAndWalls.png",
+    sliceX: 18, // 288px / 16px
+    sliceY: 9, // 144px / 16px
     tileSize: 16,
   },
   doorsAndWindows: {
-    path: "./mi-casa/TopDownHouse_DoorsAndWindows.png",
-    sliceX: 18,  // 288px / 16px
-    sliceY: 10,  // 160px / 16px
+    path: "./tilesets/interior/TopDownHouse_DoorsAndWindows.png",
+    sliceX: 18, // 288px / 16px
+    sliceY: 10, // 160px / 16px
     tileSize: 16,
   },
   furnitureState1: {
-    path: "./mi-casa/TopDownHouse_FurnitureState1.png",
-    sliceX: 13,  // 208px / 16px
-    sliceY: 18,  // 288px / 16px
+    path: "./tilesets/interior/TopDownHouse_FurnitureState1.png",
+    sliceX: 13, // 208px / 16px
+    sliceY: 18, // 288px / 16px
     tileSize: 16,
   },
   furnitureState2: {
-    path: "./mi-casa/TopDownHouse_FurnitureState2.png",
+    path: "./tilesets/interior/TopDownHouse_FurnitureState2.png",
     sliceX: 13,
     sliceY: 18,
     tileSize: 16,
   },
   smallItems: {
-    path: "./mi-casa/TopDownHouse_SmallItems.png",
+    path: "./tilesets/interior/TopDownHouse_SmallItems.png",
     sliceX: 13,
     sliceY: 18,
     tileSize: 16,
   },
   interiorsFree: {
-    path: "./mi-casa/Interiors_free_16x16.png",
-    sliceX: 16,  // 256px / 16px
-    sliceY: 89,  // 1424px / 16px
+    path: "./tilesets/interior/Interiors_free_16x16.png",
+    sliceX: 16, // 256px / 16px
+    sliceY: 89, // 1424px / 16px
     tileSize: 16,
   },
 };
@@ -511,9 +662,15 @@ export const MC_FURNITURE = {
   toilet: 156,
   // 地毯 (3x3)
   rug: {
-    topLeft: 169, top: 170, topRight: 171,
-    left: 182, center: 183, right: 184,
-    bottomLeft: 195, bottom: 196, bottomRight: 197,
+    topLeft: 169,
+    top: 170,
+    topRight: 171,
+    left: 182,
+    center: 183,
+    right: 184,
+    bottomLeft: 195,
+    bottom: 196,
+    bottomRight: 197,
   },
   rugSmall: 172,
   // 植物
@@ -586,7 +743,7 @@ export const MC_SMALL_ITEMS = {
 // Mi-Casa 宝箱帧映射 (使用 mc-small-items tileset 中已验证的宝箱精灵)
 export const MC_CHEST = {
   closed: MC_SMALL_ITEMS.chestClosed, // 104
-  open: MC_SMALL_ITEMS.chestOpen,     // 105
+  open: MC_SMALL_ITEMS.chestOpen, // 105
 };
 
 // ========== 加载所有精灵 ==========
@@ -603,8 +760,8 @@ export async function loadAllSprites() {
     },
   });
 
-  console.log("✅ 完整精灵表加载完成 (39×31 = 1209 瓦片)");
-  
+  console.log("[Sprites] Main spritesheet loaded (39x31 = 1209 tiles)");
+
   // 加载 Mi-Casa 资产
   await loadMiCasaAssets();
 
@@ -631,7 +788,7 @@ export async function loadMiCasaAssets() {
       "mc2-walk-down": { from: 69, to: 71, loop: true, speed: 6 },
     },
   });
-  console.log("✅ Mi-Casa 角色精灵加载完成");
+  console.log("[Sprites] Interior character sprites loaded");
 
   // 加载室内 Tileset
   k.loadSprite("mc-floors-walls", INTERIOR_TILESETS.floorsAndWalls.path, {
@@ -664,11 +821,11 @@ export async function loadMiCasaAssets() {
     sliceY: INTERIOR_TILESETS.interiorsFree.sliceY,
   });
 
-  console.log("✅ Mi-Casa 室内 Tileset 加载完成");
-  
+  console.log("[Sprites] Interior tilesets loaded");
+
   // 加载字体
-  k.loadFont("monogram", "./mi-casa/monogram.ttf");
-  console.log("✅ Mi-Casa 字体加载完成");
+  k.loadFont("monogram", "./tilesets/interior/monogram.ttf");
+  console.log("[Sprites] Monogram font loaded");
 }
 
 // ========== 加载小游戏资产 ==========
@@ -680,8 +837,8 @@ export async function loadMinigameAssets() {
   k.loadSprite("tank", "./assets/tank.webp");
   k.loadSprite("quit-btn", "./assets/quit.webp");
   k.loadSprite("home-btn", "./assets/home.png");
-  
-  console.log("✅ 小游戏资产加载完成");
+
+  console.log("[Sprites] Minigame assets loaded");
 }
 
 // ========== 辅助函数 ==========
@@ -691,7 +848,8 @@ export function getRandomDecoration() {
     ...Object.values(PLANTS.eggs),
     ...Object.values(PLANTS.flowers),
     ...Object.values(PLANTS.mushrooms),
-    PLANTS.grass.short1, PLANTS.grass.short2,
+    PLANTS.grass.short1,
+    PLANTS.grass.short2,
   ];
   return decorations[Math.floor(Math.random() * decorations.length)];
 }
@@ -704,6 +862,6 @@ export function getRandomRock() {
 
 // 获取随机树类型
 export function getRandomTreeType() {
-  const types = ['green', 'brown', 'dead', 'pine', 'fruitTree'];
+  const types = ["green", "brown", "dead", "pine", "fruitTree"];
   return types[Math.floor(Math.random() * types.length)];
 }

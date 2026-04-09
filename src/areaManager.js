@@ -1,20 +1,34 @@
 // 区域管理器 - 处理地图加载和区域切换
 import { k } from "./kaboomCtx";
-import { GAME_CONFIG, DIALOGUE_DATA } from "./constants";
+import { GAME_CONFIG } from "./data/gameConfig.js";
+import { DIALOGUE_DATA } from "./data/dialogues.js";
 import { TILE_FRAMES } from "./maps/index";
 import {
-  VILLAGE_MAP, VILLAGE_OBJECTS,
-  FOREST_MAP, FOREST_OBJECTS,
-  LAKE_MAP, LAKE_OBJECTS,
-  MINE_MAP, MINE_OBJECTS,
-  CASTLE_MAP, CASTLE_OBJECTS,
+  VILLAGE_MAP,
+  VILLAGE_OBJECTS,
+  FOREST_MAP,
+  FOREST_OBJECTS,
+  LAKE_MAP,
+  LAKE_OBJECTS,
+  MINE_MAP,
+  MINE_OBJECTS,
+  CASTLE_MAP,
+  CASTLE_OBJECTS,
 } from "./maps/index";
+import { TREES, INTERACTABLES, BUILDINGS, MC_CHEST } from "./sprites";
 import {
-  TREES, PLANTS, FENCES, INTERACTABLES, ITEMS, BUILDINGS,
-  CHARACTERS, SPECIAL_CHARS, FURNITURE, ROCKS, MC_CHEST
-} from "./sprites";
-import { gameState, markItemCollected, isItemCollected, markChestOpened, isChestOpened, addGold, addExp, healPlayer, addToInventory } from "./gameState";
-import { displayDialogue } from "./utils";
+  gameState,
+  markItemCollected,
+  isItemCollected,
+  markChestOpened,
+  isChestOpened,
+  addGold,
+  addExp,
+  healPlayer,
+  restoreMana,
+  addToInventory,
+} from "./gameState";
+import { displayDialogue } from "./uiHelpers";
 import { enterInterior } from "./scenes/interior";
 
 // 区域数据映射
@@ -33,7 +47,7 @@ let currentAreaObjects = [];
 export function loadArea(areaName, player) {
   const areaData = AREA_DATA[areaName];
   if (!areaData) {
-    console.error(`区域 ${areaName} 不存在`);
+    console.error(`[AreaManager] Area "${areaName}" not found`);
     return null;
   }
 
@@ -48,11 +62,7 @@ export function loadArea(areaName, player) {
   k.setBackground(k.Color.fromHex(map.bgColor || "#311047"));
 
   // 创建地图容器
-  const mapContainer = k.add([
-    k.pos(0, 0),
-    k.scale(scale),
-    "map",
-  ]);
+  const mapContainer = k.add([k.pos(0, 0), k.scale(scale), "map"]);
 
   // 渲染地图瓦片
   for (let y = 0; y < map.height; y++) {
@@ -91,7 +101,7 @@ export function loadArea(areaName, player) {
 function loadAreaObjects(objects, player, scale, tileSize) {
   const objectScale = GAME_CONFIG.OBJECT_SCALE || 2;
 
-  objects.forEach(obj => {
+  objects.forEach((obj) => {
     const worldX = obj.x * tileSize * scale;
     const worldY = obj.y * tileSize * scale;
     const objId = `${gameState.currentArea}_${obj.type}_${obj.x}_${obj.y}`;
@@ -179,11 +189,13 @@ function createNPC(obj, x, y, scale, player) {
   player.onCollide(obj.name, () => {
     if (player.isInDialogue) return;
     player.isInDialogue = true;
-    
+
     const dialogue = DIALOGUE_DATA[obj.dialogue || obj.name];
-    
+
     if (dialogue) {
-      displayDialogue(dialogue, () => { player.isInDialogue = false; });
+      displayDialogue(dialogue, () => {
+        player.isInDialogue = false;
+      });
     } else {
       player.isInDialogue = false;
     }
@@ -212,12 +224,20 @@ function createChest(obj, x, y, scale, player, objId) {
     // 检查是否需要钥匙
     if (obj.locked) {
       const keyType = obj.frame === INTERACTABLES.chest.golden ? "keyGold" : "keyBronze";
-      if (!gameState.inventory.some(item => item.type === keyType)) {
+      if (!gameState.inventory.some((item) => item.type === keyType)) {
         player.isInDialogue = true;
-        displayDialogue({
-          speaker: "系统",
-          lines: ["这个宝箱被锁住了！", `你需要一把${keyType === "keyGold" ? "金" : "铜"}钥匙来打开它。`]
-        }, () => { player.isInDialogue = false; });
+        displayDialogue(
+          {
+            speaker: "系统",
+            lines: [
+              "这个宝箱被锁住了！",
+              `你需要一把${keyType === "keyGold" ? "金" : "铜"}钥匙来打开它。`,
+            ],
+          },
+          () => {
+            player.isInDialogue = false;
+          }
+        );
         return;
       }
     }
@@ -227,20 +247,25 @@ function createChest(obj, x, y, scale, player, objId) {
     chest.frame = MC_CHEST.open;
     addGold(obj.gold || 50);
     addExp(30);
-    
+
     showFloatingText(x, y, `+${obj.gold || 50} 金币`);
     createCollectEffect(x, y);
-    
-    displayDialogue({
-      speaker: "系统",
-      lines: [`你打开了宝箱！获得了 ${obj.gold || 50} 金币！`]
-    }, () => { player.isInDialogue = false; });
+
+    displayDialogue(
+      {
+        speaker: "系统",
+        lines: [`你打开了宝箱！获得了 ${obj.gold || 50} 金币！`],
+      },
+      () => {
+        player.isInDialogue = false;
+      }
+    );
   });
 }
 
 function createWell(obj, x, y, scale, player, mapScale, tileSize) {
   const offset = tileSize * mapScale * 0.4;
-  
+
   const wellTop = k.add([
     k.sprite("spritesheet", { frame: INTERACTABLES.well.top }),
     k.pos(x, y - offset),
@@ -248,7 +273,7 @@ function createWell(obj, x, y, scale, player, mapScale, tileSize) {
     k.scale(scale),
     k.z(6),
   ]);
-  
+
   const wellBottom = k.add([
     k.sprite("spritesheet", { frame: INTERACTABLES.well.bottom }),
     k.pos(x, y + offset),
@@ -260,7 +285,7 @@ function createWell(obj, x, y, scale, player, mapScale, tileSize) {
     obj.name,
     "well",
   ]);
-  
+
   currentAreaObjects.push(wellTop, wellBottom);
 
   player.onCollide(obj.name, () => {
@@ -268,10 +293,15 @@ function createWell(obj, x, y, scale, player, mapScale, tileSize) {
     player.isInDialogue = true;
     healPlayer(gameState.player.maxHp);
     showFloatingText(x, y, "HP 完全恢复！");
-    displayDialogue({
-      speaker: "系统",
-      lines: ["你在井边休息了一会儿...", "HP 已完全恢复！"]
-    }, () => { player.isInDialogue = false; });
+    displayDialogue(
+      {
+        speaker: "系统",
+        lines: ["你在井边休息了一会儿...", "HP 已完全恢复！"],
+      },
+      () => {
+        player.isInDialogue = false;
+      }
+    );
   });
 }
 
@@ -293,17 +323,19 @@ function createSign(obj, x, y, scale, player) {
   player.onCollide(signId, () => {
     if (player.isInDialogue) return;
     player.isInDialogue = true;
-    
+
     const dialogue = DIALOGUE_DATA[obj.dialogue] || DIALOGUE_DATA.sign;
-    
-    displayDialogue(dialogue, () => { player.isInDialogue = false; });
+
+    displayDialogue(dialogue, () => {
+      player.isInDialogue = false;
+    });
   });
 }
 
 function createTree(obj, x, y, mapScale, objScale, tileSize) {
   const offset = tileSize * mapScale * 0.7;
   const treeType = TREES[obj.variant] || TREES.green;
-  
+
   const treeTop = k.add([
     k.sprite("spritesheet", { frame: treeType.top }),
     k.pos(x, y - offset),
@@ -311,7 +343,7 @@ function createTree(obj, x, y, mapScale, objScale, tileSize) {
     k.scale(objScale),
     k.z(7),
   ]);
-  
+
   const treeMid = k.add([
     k.sprite("spritesheet", { frame: treeType.middle }),
     k.pos(x, y),
@@ -319,7 +351,7 @@ function createTree(obj, x, y, mapScale, objScale, tileSize) {
     k.scale(objScale),
     k.z(6),
   ]);
-  
+
   const treeBottom = k.add([
     k.sprite("spritesheet", { frame: treeType.bottom }),
     k.pos(x, y + offset),
@@ -330,7 +362,7 @@ function createTree(obj, x, y, mapScale, objScale, tileSize) {
     k.z(5),
     "tree",
   ]);
-  
+
   currentAreaObjects.push(treeTop, treeMid, treeBottom);
 }
 
@@ -342,9 +374,13 @@ function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
   const buildingId = `building_${obj.name}`;
 
   // 屋顶
-  [-1, 0, 1].forEach(dx => {
-    const roofFrame = dx === -1 ? BUILDINGS.roof.peakLeft :
-                      dx === 1 ? BUILDINGS.roof.peakRight : BUILDINGS.roof.peak;
+  [-1, 0, 1].forEach((dx) => {
+    const roofFrame =
+      dx === -1
+        ? BUILDINGS.roof.peakLeft
+        : dx === 1
+          ? BUILDINGS.roof.peakRight
+          : BUILDINGS.roof.peak;
     const part = k.add([
       k.sprite("spritesheet", { frame: roofFrame }),
       k.pos(x + dx * offset, y - offset * 2),
@@ -364,8 +400,8 @@ function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
     { frame: BUILDINGS.door.open, dx: 0, dy: 0 }, // 门
     { frame: wall.bottomRight, dx: 1, dy: 0 },
   ];
-  
-  wallParts.forEach(p => {
+
+  wallParts.forEach((p) => {
     const part = k.add([
       k.sprite("spritesheet", { frame: p.frame }),
       k.pos(x + p.dx * offset, y + p.dy * offset),
@@ -375,7 +411,7 @@ function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
     ]);
     buildingParts.push(part);
   });
-  
+
   // 门口入口区域
   if (obj.enterable && obj.interior) {
     const doorArea = k.add([
@@ -386,28 +422,33 @@ function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
       "door",
     ]);
     buildingParts.push(doorArea);
-    
+
     // 进入建筑
     player.onCollide(buildingId, () => {
       if (player.isInDialogue) return;
       player.isInDialogue = true;
-      
-      displayDialogue({
-        speaker: "系统",
-        lines: ["按空格键进入建筑"]
-      }, () => { player.isInDialogue = false; });
-      
+
+      displayDialogue(
+        {
+          speaker: "系统",
+          lines: ["按空格键进入建筑"],
+        },
+        () => {
+          player.isInDialogue = false;
+        }
+      );
+
       // 监听空格键进入
       const enterHandler = k.onKeyPress("space", () => {
         enterHandler.cancel();
         enterInterior(obj.interior, gameState.currentArea, obj.x, obj.y + 2);
       });
-      
+
       // 离开时取消监听
       setTimeout(() => enterHandler.cancel(), 3000);
     });
   }
-  
+
   // 墙壁碰撞
   const collision = k.add([
     k.area({ shape: new k.Rect(k.vec2(0), offset * 2.5, offset * 1.5) }),
@@ -417,7 +458,7 @@ function createBuilding(obj, x, y, mapScale, objScale, tileSize, player) {
     "building-wall",
   ]);
   buildingParts.push(collision);
-  
+
   currentAreaObjects.push(...buildingParts);
 }
 
@@ -449,21 +490,21 @@ function createItem(obj, x, y, scale, player, objId) {
     markItemCollected(objId);
     k.destroy(item);
     createCollectEffect(x, y);
-    
+
     handleItemPickup(obj, x, y);
   });
 }
 
 function handleItemPickup(obj, x, y) {
-  let message = "";
-  
+  let message;
+
   switch (obj.itemType) {
     case "hpPotion":
       healPlayer(30);
       message = "+30 HP";
       break;
     case "mpPotion":
-      gameState.player.mp = Math.min(gameState.player.mp + 20, gameState.player.maxMp);
+      restoreMana(20);
       message = "+20 MP";
       break;
     case "coin":
@@ -488,8 +529,12 @@ function handleItemPickup(obj, x, y) {
       addToInventory({ type: obj.itemType, name: obj.itemType });
       message = "获得钥匙！";
       break;
-    case "egg_red": case "egg_orange": case "egg_yellow":
-    case "egg_green": case "egg_blue": case "egg_purple":
+    case "egg_red":
+    case "egg_orange":
+    case "egg_yellow":
+    case "egg_green":
+    case "egg_blue":
+    case "egg_purple":
       addToInventory({ type: obj.itemType, name: obj.itemType });
       addExp(20);
       message = "获得彩蛋！+20 经验";
@@ -498,7 +543,7 @@ function handleItemPickup(obj, x, y) {
       addToInventory({ type: obj.itemType, name: obj.itemType });
       message = "获得物品！";
   }
-  
+
   showFloatingText(x, y, message);
 }
 
@@ -514,11 +559,11 @@ function createPortal(obj, x, y, mapScale, tileSize, player) {
 
   player.onCollide(`portal_${obj.targetArea}`, () => {
     if (player.isInDialogue) return;
-    
+
     // 切换区域
     gameState.currentArea = obj.targetArea;
     gameState.playerPos = { x: obj.targetX, y: obj.targetY };
-    
+
     // 重新加载场景
     k.go("world");
   });
@@ -588,18 +633,21 @@ function createEnemySpawn(obj, x, y, player) {
 
   player.onCollide(`enemy_${obj.x}_${obj.y}`, () => {
     if (player.isInDialogue) return;
-    
+
     // 随机遭遇战斗
     if (Math.random() < 0.3) {
       player.isInDialogue = true;
-      displayDialogue({
-        speaker: "系统",
-        lines: [`遭遇了敌人！`, "准备战斗！"]
-      }, () => {
-        player.isInDialogue = false;
-        // 进入战斗场景
-        k.go("battle", obj.enemyType, obj.level);
-      });
+      displayDialogue(
+        {
+          speaker: "系统",
+          lines: [`遭遇了敌人！`, "准备战斗！"],
+        },
+        () => {
+          player.isInDialogue = false;
+          // 进入战斗场景
+          k.go("battle", obj.enemyType, obj.level);
+        }
+      );
     }
   });
 }
@@ -626,13 +674,16 @@ function createBossTrigger(obj, x, y, player) {
     player.isInDialogue = true;
     gameState.defeatedEnemies.add(bossId);
 
-    displayDialogue({
-      speaker: "系统",
-      lines: ["前方感受到强大的气息...", "一个强大的敌人挡住了去路！", "准备战斗！"]
-    }, () => {
-      player.isInDialogue = false;
-      k.go("battle", obj.bossType, gameState.player.level + 5);
-    });
+    displayDialogue(
+      {
+        speaker: "系统",
+        lines: ["前方感受到强大的气息...", "一个强大的敌人挡住了去路！", "准备战斗！"],
+      },
+      () => {
+        player.isInDialogue = false;
+        k.go("battle", obj.bossType, gameState.player.level + 5);
+      }
+    );
   });
 }
 
@@ -649,20 +700,23 @@ function createFishingSpot(obj, x, y, scale, player) {
   player.onCollide(obj.name, () => {
     if (player.isInDialogue) return;
     player.isInDialogue = true;
-    displayDialogue({
-      speaker: "系统",
-      lines: ["这里可以钓鱼！", "按空格键开始钓鱼。"]
-    }, () => {
-      player.isInDialogue = false;
-      // TODO: 进入钓鱼小游戏
-    });
+    displayDialogue(
+      {
+        speaker: "系统",
+        lines: ["这里可以钓鱼！", "按空格键开始钓鱼。"],
+      },
+      () => {
+        player.isInDialogue = false;
+        // TODO: 进入钓鱼小游戏
+      }
+    );
   });
 }
 
 // ===== 辅助函数 =====
 
 function clearAreaObjects() {
-  currentAreaObjects.forEach(obj => {
+  currentAreaObjects.forEach((obj) => {
     if (obj && obj.destroy) {
       k.destroy(obj);
     }
@@ -673,14 +727,34 @@ function clearAreaObjects() {
 function createMapBoundaries(width, height, tileSize, scale) {
   const mapWidth = width * tileSize * scale;
   const mapHeight = height * tileSize * scale;
-  
+
   const boundaries = [
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }), k.body({ isStatic: true }), k.pos(0, -10), "boundary"]),
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }), k.body({ isStatic: true }), k.pos(0, mapHeight), "boundary"]),
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }), k.body({ isStatic: true }), k.pos(-10, 0), "boundary"]),
-    k.add([k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }), k.body({ isStatic: true }), k.pos(mapWidth, 0), "boundary"]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }),
+      k.body({ isStatic: true }),
+      k.pos(0, -10),
+      "boundary",
+    ]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), mapWidth, 10) }),
+      k.body({ isStatic: true }),
+      k.pos(0, mapHeight),
+      "boundary",
+    ]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }),
+      k.body({ isStatic: true }),
+      k.pos(-10, 0),
+      "boundary",
+    ]),
+    k.add([
+      k.area({ shape: new k.Rect(k.vec2(0), 10, mapHeight) }),
+      k.body({ isStatic: true }),
+      k.pos(mapWidth, 0),
+      "boundary",
+    ]),
   ];
-  
+
   currentAreaObjects.push(...boundaries);
 }
 

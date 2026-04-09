@@ -1,46 +1,46 @@
-// 游戏状态管理器 - 管理全局游戏状态
-import { INITIAL_PLAYER_STATE } from "./constants";
+// Game state manager - single source of truth for all game state
+import { INITIAL_PLAYER_STATE, GAME_CONFIG } from "./data/gameConfig.js";
 
 // 游戏状态
 export const gameState = {
   // 当前区域
   currentArea: "village",
-  
+
   // 玩家状态
   player: { ...INITIAL_PLAYER_STATE },
-  
+
   // 玩家位置
   playerPos: { x: 0, y: 0 },
-  
+
   // 背包
   inventory: [],
   maxInventorySize: 20,
-  
+
   // 装备
   equipment: {
     weapon: null,
     shield: null,
     accessory: null,
   },
-  
+
   // 已收集的物品 (防止重复拾取)
   collectedItems: new Set(),
-  
+
   // 已打开的宝箱
   openedChests: new Set(),
-  
+
   // 已击败的敌人
   defeatedEnemies: new Set(),
-  
+
   // 任务进度
   quests: {
     main: { current: 0, completed: [] },
     side: [],
   },
-  
+
   // 成就
   achievements: [],
-  
+
   // 统计数据
   stats: {
     monstersKilled: 0,
@@ -49,7 +49,7 @@ export const gameState = {
     distanceTraveled: 0,
     timePlayed: 0,
   },
-  
+
   // 游戏设置
   settings: {
     musicVolume: 0.5,
@@ -61,18 +61,12 @@ export const gameState = {
 // ===== 玩家相关操作 =====
 
 export function healPlayer(amount) {
-  gameState.player.hp = Math.min(
-    gameState.player.hp + amount,
-    gameState.player.maxHp
-  );
+  gameState.player.hp = Math.min(gameState.player.hp + amount, gameState.player.maxHp);
   return gameState.player.hp;
 }
 
 export function restoreMana(amount) {
-  gameState.player.mp = Math.min(
-    gameState.player.mp + amount,
-    gameState.player.maxMp
-  );
+  gameState.player.mp = Math.min(gameState.player.mp + amount, gameState.player.maxMp);
   return gameState.player.mp;
 }
 
@@ -92,29 +86,65 @@ export function spendGold(amount) {
 
 export function addExp(amount) {
   gameState.player.exp += amount;
-  
+
   // 检查升级
   while (gameState.player.exp >= gameState.player.expToLevel) {
     levelUp();
   }
-  
+
   return gameState.player;
 }
 
 function levelUp() {
   gameState.player.exp -= gameState.player.expToLevel;
   gameState.player.level++;
-  
-  // 属性提升
-  gameState.player.maxHp += 10;
-  gameState.player.maxMp += 5;
+
+  // Stat gains from config
+  gameState.player.maxHp += GAME_CONFIG.LEVEL_UP_HP_GAIN;
+  gameState.player.maxMp += GAME_CONFIG.LEVEL_UP_MP_GAIN;
   gameState.player.hp = gameState.player.maxHp;
   gameState.player.mp = gameState.player.maxMp;
-  
-  // 经验需求增加
-  gameState.player.expToLevel = Math.floor(gameState.player.expToLevel * 1.5);
-  
+
+  // EXP requirement scaling
+  gameState.player.expToLevel = Math.floor(
+    gameState.player.expToLevel * GAME_CONFIG.EXP_SCALING_FACTOR
+  );
+
   return gameState.player.level;
+}
+
+// Apply death penalty
+export function applyDeathPenalty() {
+  gameState.player.gold = Math.floor(
+    gameState.player.gold * GAME_CONFIG.DEATH_GOLD_PENALTY_RATIO
+  );
+  gameState.player.hp = Math.floor(
+    gameState.player.maxHp * GAME_CONFIG.DEATH_HP_RESTORE_RATIO
+  );
+  gameState.player.mp = Math.floor(
+    gameState.player.maxMp * GAME_CONFIG.DEATH_MP_RESTORE_RATIO
+  );
+}
+
+// Spend mana
+export function spendMana(amount) {
+  if (gameState.player.mp >= amount) {
+    gameState.player.mp -= amount;
+    return true;
+  }
+  return false;
+}
+
+// Take damage
+export function takeDamage(amount) {
+  gameState.player.hp = Math.max(0, gameState.player.hp - amount);
+  return gameState.player.hp;
+}
+
+// Full restore
+export function fullRestore() {
+  gameState.player.hp = gameState.player.maxHp;
+  gameState.player.mp = gameState.player.maxMp;
 }
 
 // ===== 背包操作 =====
@@ -136,15 +166,15 @@ export function removeFromInventory(itemIndex) {
 }
 
 export function getInventoryItem(itemType) {
-  return gameState.inventory.find(item => item.type === itemType);
+  return gameState.inventory.find((item) => item.type === itemType);
 }
 
 export function hasItem(itemType) {
-  return gameState.inventory.some(item => item.type === itemType);
+  return gameState.inventory.some((item) => item.type === itemType);
 }
 
 export function countItem(itemType) {
-  return gameState.inventory.filter(item => item.type === itemType).length;
+  return gameState.inventory.filter((item) => item.type === itemType).length;
 }
 
 // ===== 装备操作 =====
@@ -152,12 +182,12 @@ export function countItem(itemType) {
 export function equipItem(item, slot) {
   const oldItem = gameState.equipment[slot];
   gameState.equipment[slot] = item;
-  
+
   // 如果有旧装备，放回背包
   if (oldItem) {
     addToInventory(oldItem);
   }
-  
+
   return oldItem;
 }
 
@@ -209,25 +239,25 @@ export function saveGame(slot = 0) {
     defeatedEnemies: Array.from(gameState.defeatedEnemies),
     savedAt: Date.now(),
   };
-  
+
   localStorage.setItem(`pixelRPG_save_${slot}`, JSON.stringify(saveData));
   return true;
 }
 
 export function loadGame(slot = 0) {
   const saveData = localStorage.getItem(`pixelRPG_save_${slot}`);
-  
+
   if (saveData) {
     const data = JSON.parse(saveData);
-    
+
     Object.assign(gameState, data);
     gameState.collectedItems = new Set(data.collectedItems);
     gameState.openedChests = new Set(data.openedChests);
     gameState.defeatedEnemies = new Set(data.defeatedEnemies);
-    
+
     return true;
   }
-  
+
   return false;
 }
 

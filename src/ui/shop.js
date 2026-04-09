@@ -1,8 +1,6 @@
 // 商店UI系统
-import { k } from "../kaboomCtx";
-import { gameState, addToInventory, spendGold } from "../gameState";
-import { ITEMS } from "../sprites";
-import { updateUI } from "../utils";
+import { gameState, addToInventory, spendGold, fullRestore, addGold } from "../gameState";
+import { updateUI } from "../uiHelpers";
 import { getItemData } from "./inventory";
 
 // 商店状态
@@ -20,7 +18,7 @@ const SHOP_INVENTORY = {
     { type: "keyBronze", price: 50, stock: 10 },
     { type: "keySilver", price: 100, stock: 5 },
   ],
-  
+
   // 铁匠铺
   smithy: [
     { type: "sword", price: 100, stock: 5 },
@@ -29,7 +27,7 @@ const SHOP_INVENTORY = {
     { type: "swordGold", price: 500, stock: 1 },
     { type: "shieldGold", price: 500, stock: 1 },
   ],
-  
+
   // 旅店
   inn: [
     { type: "rest", price: 10, stock: 99, special: true, name: "休息", desc: "完全恢复HP和MP" },
@@ -161,11 +159,11 @@ export function createShopUI() {
       ">返回</button>
     </div>
   `;
-  
+
   const container = document.createElement("div");
   container.innerHTML = html;
   document.body.appendChild(container);
-  
+
   // 绑定事件
   document.getElementById("btn-shop-close").addEventListener("click", closeShop);
   document.getElementById("btn-buy").addEventListener("click", buySelectedItem);
@@ -178,17 +176,17 @@ export function openShop(type = "general", title = "商店") {
   shopType = type;
   shopOpen = true;
   selectedItem = null;
-  
+
   const panel = document.getElementById("shop-panel");
   const titleEl = document.getElementById("shop-title");
-  
+
   if (panel) {
     panel.style.display = "block";
   }
   if (titleEl) {
     titleEl.textContent = title;
   }
-  
+
   refreshShopUI();
 }
 
@@ -196,7 +194,7 @@ export function openShop(type = "general", title = "商店") {
 export function closeShop() {
   shopOpen = false;
   selectedItem = null;
-  
+
   const panel = document.getElementById("shop-panel");
   if (panel) {
     panel.style.display = "none";
@@ -208,21 +206,21 @@ function refreshShopUI() {
   const itemsContainer = document.getElementById("shop-items");
   const goldDisplay = document.getElementById("shop-gold");
   const buyBtn = document.getElementById("btn-buy");
-  
+
   if (goldDisplay) {
     goldDisplay.textContent = `💰 ${gameState.player.gold} 金币`;
   }
-  
+
   if (!itemsContainer) return;
-  
+
   itemsContainer.innerHTML = "";
-  
+
   const items = SHOP_INVENTORY[shopType] || [];
-  
+
   items.forEach((item, index) => {
     const itemData = item.special ? item : getItemData(item.type);
     const canAfford = gameState.player.gold >= item.price;
-    
+
     const itemEl = document.createElement("div");
     itemEl.className = "shop-item";
     itemEl.dataset.index = index;
@@ -237,21 +235,21 @@ function refreshShopUI() {
       align-items: center;
       opacity: ${canAfford ? 1 : 0.5};
     `;
-    
+
     itemEl.innerHTML = `
       <span style="color: ${canAfford ? "#4ade80" : "#9ca3af"};">${itemData.name}</span>
       <span style="color: #fcd34d;">${item.price} 💰</span>
     `;
-    
+
     itemEl.addEventListener("click", () => selectShopItem(index));
     itemsContainer.appendChild(itemEl);
   });
-  
+
   // 更新购买按钮状态
   if (buyBtn) {
     buyBtn.disabled = selectedItem === null;
   }
-  
+
   updateShopDetail();
 }
 
@@ -265,19 +263,19 @@ function selectShopItem(index) {
 function updateShopDetail() {
   const detail = document.getElementById("shop-detail");
   if (!detail) return;
-  
+
   if (selectedItem === null) {
     detail.innerHTML = `<p style="margin: 0; color: #9ca3af;">选择商品查看详情</p>`;
     return;
   }
-  
+
   const items = SHOP_INVENTORY[shopType] || [];
   const item = items[selectedItem];
   if (!item) return;
-  
+
   const itemData = item.special ? item : getItemData(item.type);
   const canAfford = gameState.player.gold >= item.price;
-  
+
   detail.innerHTML = `
     <h4 style="margin: 0 0 8px 0; color: #4ade80;">${itemData.name}</h4>
     <p style="margin: 0 0 8px 0; color: #d1d5db; font-size: 13px;">${itemData.desc}</p>
@@ -291,39 +289,38 @@ function updateShopDetail() {
 // 购买选中商品
 function buySelectedItem() {
   if (selectedItem === null) return;
-  
+
   const items = SHOP_INVENTORY[shopType] || [];
   const item = items[selectedItem];
   if (!item) return;
-  
+
   // 检查金币
   if (!spendGold(item.price)) {
     alert("金币不足！");
     return;
   }
-  
+
   // 处理特殊商品
   if (item.special) {
     if (item.type === "rest") {
-      gameState.player.hp = gameState.player.maxHp;
-      gameState.player.mp = gameState.player.maxMp;
+      fullRestore();
       alert("HP和MP已完全恢复！");
     }
   } else {
     // 添加到背包
     if (!addToInventory({ type: item.type, name: item.type })) {
       // 背包满了，退回金币
-      gameState.player.gold += item.price;
+      addGold(item.price);
       alert("背包已满！");
       return;
     }
   }
-  
+
   // 减少库存
   if (item.stock !== 99) {
     item.stock--;
   }
-  
+
   refreshShopUI();
   updateUI();
 }
@@ -349,18 +346,18 @@ function closeSellPanel() {
 function refreshSellPanel() {
   const container = document.getElementById("sell-items");
   if (!container) return;
-  
+
   container.innerHTML = "";
-  
+
   if (gameState.inventory.length === 0) {
     container.innerHTML = `<p style="color: #9ca3af; text-align: center;">背包为空</p>`;
     return;
   }
-  
+
   gameState.inventory.forEach((item, index) => {
     const itemData = getItemData(item.type);
     const sellPrice = Math.floor((itemData.price || 10) * 0.5);
-    
+
     const itemEl = document.createElement("div");
     itemEl.style.cssText = `
       padding: 10px;
@@ -370,7 +367,7 @@ function refreshSellPanel() {
       justify-content: space-between;
       align-items: center;
     `;
-    
+
     itemEl.innerHTML = `
       <span style="color: #fcd34d;">${itemData.name}</span>
       <div>
@@ -385,12 +382,12 @@ function refreshSellPanel() {
         ">出售</button>
       </div>
     `;
-    
+
     container.appendChild(itemEl);
   });
-  
+
   // 绑定出售按钮事件
-  container.querySelectorAll(".sell-btn").forEach(btn => {
+  container.querySelectorAll(".sell-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const index = parseInt(e.target.dataset.index);
       sellItem(index);
@@ -402,16 +399,16 @@ function refreshSellPanel() {
 function sellItem(index) {
   const item = gameState.inventory[index];
   if (!item) return;
-  
+
   const itemData = getItemData(item.type);
   const sellPrice = Math.floor((itemData.price || 10) * 0.5);
-  
+
   // 移除物品
   gameState.inventory.splice(index, 1);
-  
+
   // 获得金币
-  gameState.player.gold += sellPrice;
-  
+  addGold(sellPrice);
+
   refreshSellPanel();
   refreshShopUI();
   updateUI();

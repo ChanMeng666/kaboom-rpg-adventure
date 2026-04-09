@@ -1,12 +1,12 @@
 // 玩家角色模块
 import { k } from "./kaboomCtx";
-import { GAME_CONFIG } from "./constants";
-import { getDirectionBetweenPoints } from "./utils";
+import { GAME_CONFIG } from "./data/gameConfig.js";
+import { getDirectionBetweenPoints } from "./uiHelpers";
 
 // 创建玩家角色
 export function createPlayer(x, y) {
   const playerScale = GAME_CONFIG.PLAYER_SCALE || 1.5;
-  
+
   const player = k.add([
     k.sprite("spritesheet", { anim: "idle-down" }),
     k.pos(x, y),
@@ -98,10 +98,10 @@ export function setupPlayerControls(player) {
   k.onUpdate(() => {
     if (player.targetPos && player.isMoving && !player.isInDialogue) {
       const dist = player.pos.dist(player.targetPos);
-      
+
       if (dist > 5) {
         const direction = getDirectionBetweenPoints(player.pos, player.targetPos);
-        
+
         // 更新方向和翻转
         if (direction === "left") {
           player.flipX = true;
@@ -118,7 +118,7 @@ export function setupPlayerControls(player) {
           if (player.curAnim() !== "walk-down") player.play("walk-down");
           player.direction = "down";
         }
-        
+
         player.moveTo(player.targetPos, player.speed);
       } else {
         player.targetPos = null;
@@ -133,7 +133,7 @@ function movePlayer(player, dx, dy, direction) {
   player.direction = direction;
   player.isMoving = true;
   player.move(dx * player.speed, dy * player.speed);
-  
+
   // 播放对应方向的行走动画
   if (direction === "left" || direction === "right") {
     if (player.curAnim() !== "walk-side") player.play("walk-side");
@@ -148,7 +148,7 @@ function movePlayer(player, dx, dy, direction) {
 function stopPlayerMovement(player) {
   player.isMoving = false;
   player.targetPos = null;
-  
+
   // 播放对应方向的待机动画
   if (player.direction === "down") {
     player.play("idle-down");

@@ -1,5 +1,4 @@
 // 成就系统
-import { k } from "../kaboomCtx";
 import { gameState } from "../gameState";
 
 // 成就定义
@@ -26,7 +25,7 @@ const ACHIEVEMENTS = {
     icon: "🏆",
     condition: (stats) => stats.monstersKilled >= 50,
   },
-  
+
   // 收集成就
   collector_10: {
     id: "collector_10",
@@ -42,7 +41,7 @@ const ACHIEVEMENTS = {
     icon: "🎁",
     condition: (stats) => stats.itemsCollected >= 50,
   },
-  
+
   // 财富成就
   rich_100: {
     id: "rich_100",
@@ -65,7 +64,7 @@ const ACHIEVEMENTS = {
     icon: "👑",
     condition: (stats) => stats.goldEarned >= 10000,
   },
-  
+
   // 等级成就
   level_5: {
     id: "level_5",
@@ -88,7 +87,7 @@ const ACHIEVEMENTS = {
     icon: "✨",
     condition: () => gameState.player.level >= 20,
   },
-  
+
   // 探索成就
   explorer: {
     id: "explorer",
@@ -97,11 +96,16 @@ const ACHIEVEMENTS = {
     icon: "🗺️",
     condition: () => {
       const visited = gameState.visitedAreas || new Set();
-      return visited.has("village") && visited.has("forest") && 
-             visited.has("lake") && visited.has("mine") && visited.has("castle");
+      return (
+        visited.has("village") &&
+        visited.has("forest") &&
+        visited.has("lake") &&
+        visited.has("mine") &&
+        visited.has("castle")
+      );
     },
   },
-  
+
   // 特殊成就
   egg_hunter: {
     id: "egg_hunter",
@@ -110,11 +114,13 @@ const ACHIEVEMENTS = {
     icon: "🥚",
     condition: () => {
       const eggs = ["egg_blue", "egg_green", "egg_purple", "egg_yellow", "egg_red", "egg_orange"];
-      return eggs.every(egg => gameState.collectedItems?.has?.(egg) || 
-                               gameState.inventory?.some(i => i.type === egg));
+      return eggs.every(
+        (egg) =>
+          gameState.collectedItems?.has?.(egg) || gameState.inventory?.some((i) => i.type === egg)
+      );
     },
   },
-  
+
   // 完成成就
   game_complete: {
     id: "game_complete",
@@ -206,11 +212,11 @@ export function createAchievementUI() {
       }
     </style>
   `;
-  
+
   const container = document.createElement("div");
   container.innerHTML = html;
   document.body.appendChild(container);
-  
+
   // 绑定事件
   document.getElementById("btn-achievement-close").addEventListener("click", hideAchievementPanel);
 }
@@ -238,21 +244,21 @@ export function hideAchievementPanel() {
 function refreshAchievementList() {
   const list = document.getElementById("achievement-list");
   const countEl = document.getElementById("achievement-count");
-  
+
   if (!list) return;
-  
+
   const unlockedAchievements = gameState.achievements || [];
   const unlockedCount = unlockedAchievements.length;
-  
+
   if (countEl) {
     countEl.textContent = `${unlockedCount} / ${Object.keys(ACHIEVEMENTS).length}`;
   }
-  
+
   list.innerHTML = "";
-  
-  Object.values(ACHIEVEMENTS).forEach(achievement => {
+
+  Object.values(ACHIEVEMENTS).forEach((achievement) => {
     const unlocked = unlockedAchievements.includes(achievement.id);
-    
+
     const item = document.createElement("div");
     item.style.cssText = `
       padding: 12px;
@@ -264,7 +270,7 @@ function refreshAchievementList() {
       gap: 15px;
       opacity: ${unlocked ? 1 : 0.6};
     `;
-    
+
     item.innerHTML = `
       <span style="font-size: 28px; ${unlocked ? "" : "filter: grayscale(100%);"}">${achievement.icon}</span>
       <div>
@@ -277,7 +283,7 @@ function refreshAchievementList() {
         </div>
       </div>
     `;
-    
+
     list.appendChild(item);
   });
 }
@@ -286,14 +292,14 @@ function refreshAchievementList() {
 export function checkAchievements() {
   const stats = gameState.stats || {};
   const unlocked = gameState.achievements || [];
-  
-  Object.values(ACHIEVEMENTS).forEach(achievement => {
+
+  Object.values(ACHIEVEMENTS).forEach((achievement) => {
     if (!unlocked.includes(achievement.id)) {
       try {
         if (achievement.condition(stats)) {
           unlockAchievement(achievement);
         }
-      } catch (e) {
+      } catch {
         // 条件检查失败，忽略
       }
     }
@@ -305,11 +311,11 @@ function unlockAchievement(achievement) {
   if (!gameState.achievements) {
     gameState.achievements = [];
   }
-  
+
   if (gameState.achievements.includes(achievement.id)) return;
-  
+
   gameState.achievements.push(achievement.id);
-  
+
   // 显示通知
   showAchievementNotification(achievement);
 }
@@ -319,14 +325,14 @@ function showAchievementNotification(achievement) {
   const notif = document.getElementById("achievement-notification");
   const icon = document.getElementById("notif-icon");
   const name = document.getElementById("notif-name");
-  
+
   if (!notif || !icon || !name) return;
-  
+
   icon.textContent = achievement.icon;
   name.textContent = achievement.name;
-  
+
   notif.style.display = "block";
-  
+
   // 3秒后隐藏
   setTimeout(() => {
     notif.style.display = "none";

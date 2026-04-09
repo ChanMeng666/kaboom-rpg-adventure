@@ -1,21 +1,24 @@
 // 背包UI系统
 import { k } from "../kaboomCtx";
-import { gameState, removeFromInventory, equipItem, unequipItem } from "../gameState";
-import { ITEMS } from "../sprites";
-import { updateUI } from "../utils";
+import { gameState, removeFromInventory, equipItem, healPlayer, restoreMana } from "../gameState";
+import { updateUI } from "../uiHelpers";
 
 // 背包状态
 let inventoryOpen = false;
 let selectedSlot = 0;
-let inventoryUI = null;
 
 // 物品数据
 const ITEM_DATA = {
   // 消耗品
   hpPotion: { name: "红药水", desc: "恢复30点HP", price: 20, effect: { type: "heal", amount: 30 } },
   mpPotion: { name: "蓝药水", desc: "恢复20点MP", price: 30, effect: { type: "mana", amount: 20 } },
-  speedPotion: { name: "绿药水", desc: "暂时提升移动速度", price: 50, effect: { type: "speed", duration: 30 } },
-  
+  speedPotion: {
+    name: "绿药水",
+    desc: "暂时提升移动速度",
+    price: 50,
+    effect: { type: "speed", duration: 30 },
+  },
+
   // 材料
   mushroom_red: { name: "红蘑菇", desc: "森林中的普通蘑菇", price: 5 },
   mushroom_brown: { name: "棕蘑菇", desc: "森林中的普通蘑菇", price: 5 },
@@ -25,24 +28,24 @@ const ITEM_DATA = {
   herb_yellow: { name: "黄草药", desc: "制作药水的材料", price: 10 },
   herb_pink: { name: "粉草药", desc: "制作药水的材料", price: 12 },
   herb_orange: { name: "橙草药", desc: "制作药水的材料", price: 12 },
-  
+
   // 矿石
   ore_copper: { name: "铜矿石", desc: "普通的铜矿", price: 15 },
   ore_iron: { name: "铁矿石", desc: "坚硬的铁矿", price: 30 },
   ore_gold: { name: "金矿石", desc: "珍贵的金矿", price: 80 },
   ore_gem: { name: "宝石矿", desc: "闪耀的宝石原石", price: 150 },
-  
+
   // 宝石
   gemRed: { name: "红宝石", desc: "美丽的红宝石", price: 100 },
   gemBlue: { name: "蓝宝石", desc: "清澈的蓝宝石", price: 100 },
   gemGreen: { name: "绿宝石", desc: "翠绿的绿宝石", price: 100 },
   gemYellow: { name: "黄宝石", desc: "璀璨的黄宝石", price: 100 },
-  
+
   // 钥匙
   keyBronze: { name: "铜钥匙", desc: "打开普通宝箱", price: 50 },
   keySilver: { name: "银钥匙", desc: "打开银宝箱", price: 100 },
   keyGold: { name: "金钥匙", desc: "打开金宝箱", price: 200 },
-  
+
   // 彩蛋
   egg_blue: { name: "蓝色彩蛋", desc: "神秘的彩蛋", price: 30 },
   egg_green: { name: "绿色彩蛋", desc: "神秘的彩蛋", price: 30 },
@@ -50,12 +53,12 @@ const ITEM_DATA = {
   egg_yellow: { name: "黄色彩蛋", desc: "神秘的彩蛋", price: 30 },
   egg_red: { name: "红色彩蛋", desc: "神秘的彩蛋", price: 30 },
   egg_orange: { name: "橙色彩蛋", desc: "神秘的彩蛋", price: 30 },
-  
+
   // 武器
   sword: { name: "铁剑", desc: "攻击力 +5", price: 100, equip: { slot: "weapon", atk: 5 } },
   swordGold: { name: "金剑", desc: "攻击力 +15", price: 500, equip: { slot: "weapon", atk: 15 } },
   axe: { name: "战斧", desc: "攻击力 +8", price: 150, equip: { slot: "weapon", atk: 8 } },
-  
+
   // 防具
   shield: { name: "铁盾", desc: "防御力 +5", price: 100, equip: { slot: "shield", def: 5 } },
   shieldGold: { name: "金盾", desc: "防御力 +15", price: 500, equip: { slot: "shield", def: 15 } },
@@ -192,22 +195,22 @@ export function createInventoryUI() {
       </div>
     </div>
   `;
-  
+
   // 添加到页面
   const container = document.createElement("div");
   container.innerHTML = html;
   document.body.appendChild(container);
-  
+
   // 绑定事件
   document.getElementById("btn-close").addEventListener("click", toggleInventory);
   document.getElementById("btn-use").addEventListener("click", useSelectedItem);
   document.getElementById("btn-drop").addEventListener("click", dropSelectedItem);
-  
+
   // 键盘事件
   k.onKeyPress("i", () => {
     toggleInventory();
   });
-  
+
   k.onKeyPress("tab", () => {
     toggleInventory();
   });
@@ -217,10 +220,10 @@ export function createInventoryUI() {
 export function toggleInventory() {
   inventoryOpen = !inventoryOpen;
   const panel = document.getElementById("inventory-panel");
-  
+
   if (panel) {
     panel.style.display = inventoryOpen ? "block" : "none";
-    
+
     if (inventoryOpen) {
       refreshInventoryUI();
     }
@@ -231,17 +234,17 @@ export function toggleInventory() {
 export function refreshInventoryUI() {
   const grid = document.getElementById("inventory-grid");
   const goldDisplay = document.getElementById("inventory-gold");
-  
+
   if (!grid) return;
-  
+
   // 更新金币
   if (goldDisplay) {
     goldDisplay.textContent = `💰 ${gameState.player.gold} 金币`;
   }
-  
+
   // 清空格子
   grid.innerHTML = "";
-  
+
   // 创建20个格子
   for (let i = 0; i < 20; i++) {
     const slot = document.createElement("div");
@@ -260,21 +263,21 @@ export function refreshInventoryUI() {
       font-size: 12px;
       color: #9ca3af;
     `;
-    
+
     const item = gameState.inventory[i];
     if (item) {
       const itemData = getItemData(item.type);
       slot.innerHTML = `<span title="${itemData.name}">${getItemEmoji(item.type)}</span>`;
       slot.style.color = "#fbbf24";
     }
-    
+
     slot.addEventListener("click", () => selectSlot(i));
     grid.appendChild(slot);
   }
-  
+
   // 更新装备栏
   updateEquipmentUI();
-  
+
   // 更新物品详情
   updateItemDetail();
 }
@@ -288,11 +291,11 @@ function selectSlot(index) {
 // 更新装备栏UI
 function updateEquipmentUI() {
   const slots = document.querySelectorAll(".equip-slot");
-  
-  slots.forEach(slot => {
+
+  slots.forEach((slot) => {
     const slotType = slot.dataset.slot;
     const equipped = gameState.equipment[slotType];
-    
+
     if (equipped) {
       const itemData = getItemData(equipped.type);
       slot.textContent = `${getSlotName(slotType)}: ${itemData.name}`;
@@ -314,9 +317,9 @@ function getSlotName(slot) {
 function updateItemDetail() {
   const detail = document.getElementById("item-detail");
   const item = gameState.inventory[selectedSlot];
-  
+
   if (!detail) return;
-  
+
   if (item) {
     const itemData = getItemData(item.type);
     detail.innerHTML = `
@@ -333,9 +336,9 @@ function updateItemDetail() {
 function useSelectedItem() {
   const item = gameState.inventory[selectedSlot];
   if (!item) return;
-  
+
   const itemData = getItemData(item.type);
-  
+
   // 如果是装备，则装备它
   if (itemData.equip) {
     const oldItem = equipItem(removeFromInventory(selectedSlot), itemData.equip.slot);
@@ -345,27 +348,21 @@ function useSelectedItem() {
     refreshInventoryUI();
     return;
   }
-  
+
   // 如果是消耗品，使用它
   if (itemData.effect) {
     switch (itemData.effect.type) {
       case "heal":
-        gameState.player.hp = Math.min(
-          gameState.player.hp + itemData.effect.amount,
-          gameState.player.maxHp
-        );
+        healPlayer(itemData.effect.amount);
         break;
       case "mana":
-        gameState.player.mp = Math.min(
-          gameState.player.mp + itemData.effect.amount,
-          gameState.player.maxMp
-        );
+        restoreMana(itemData.effect.amount);
         break;
     }
-    
+
     removeFromInventory(selectedSlot);
     refreshInventoryUI();
-    
+
     // 更新主UI
     updateUI();
   }
@@ -375,7 +372,7 @@ function useSelectedItem() {
 function dropSelectedItem() {
   const item = gameState.inventory[selectedSlot];
   if (!item) return;
-  
+
   if (confirm(`确定要丢弃 ${getItemData(item.type).name} 吗？`)) {
     removeFromInventory(selectedSlot);
     refreshInventoryUI();
