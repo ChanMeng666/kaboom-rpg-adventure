@@ -1,5 +1,7 @@
 <div align="center"><a name="readme-top"></a>
 
+<img src="public/logo.svg" alt="Kaboom RPG 冒险游戏 Logo" width="200" />
+
 # 🎮 Kaboom RPG 冒险游戏
 
 ### 2D 像素风格 RPG 冒险游戏

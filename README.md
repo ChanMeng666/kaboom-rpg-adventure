@@ -1,5 +1,7 @@
 <div align="center"><a name="readme-top"></a>
 
+<img src="public/logo.svg" alt="Kaboom RPG Adventure Logo" width="200" />
+
 # 🎮 Kaboom RPG Adventure
 
 ### A 2D Pixel-Style RPG Adventure Game
@@ -310,6 +312,7 @@ kaboom-rpg-adventure/
 │       ├── achievements.js  # Achievements UI
 │       └── saveLoad.js      # Save/Load UI
 ├── public/                  # Static assets
+│   ├── logo.svg             # Game logo
 │   └── spritesheet.png      # Game sprites
 ├── index.html               # HTML entry
 ├── package.json             # Dependencies
