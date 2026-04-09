@@ -19,12 +19,8 @@ async function initGame() {
   console.log("[Game] Initializing...");
 
   try {
-    try {
-      await loadAllSprites();
-      console.log("[Game] Sprites loaded");
-    } catch (spriteError) {
-      console.warn("[Game] Some sprites failed to load:", spriteError.message);
-    }
+    await loadAllSprites();
+    console.log("[Game] Sprites loaded");
 
     createStartScene();
     createWorldScene();

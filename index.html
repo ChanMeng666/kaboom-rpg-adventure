@@ -305,6 +305,16 @@
     </div>
   </div>
 
+  <script>
+    // Prevent Kaboom's internal texture packer errors from crashing the game.
+    // These are non-fatal: sprites that fail to pack simply won't render.
+    window.addEventListener('unhandledrejection', function(e) {
+      if (e.reason && e.reason.message && e.reason.message.includes('Texture size')) {
+        e.preventDefault();
+        console.warn('[Game] Non-fatal:', e.reason.message);
+      }
+    });
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

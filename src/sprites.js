@@ -764,9 +764,6 @@ export async function loadAllSprites() {
 
   // 加载 Mi-Casa 资产
   await loadMiCasaAssets();
-
-  // 加载小游戏资产
-  await loadMinigameAssets();
 }
 
 // ========== 加载 Mi-Casa 资产 ==========
@@ -826,18 +823,9 @@ export async function loadMiCasaAssets() {
   console.log("[Sprites] Monogram font loaded");
 }
 
-// ========== 加载小游戏资产 ==========
-export async function loadMinigameAssets() {
-  k.loadSprite("rock", "./assets/rock.webp");
-  k.loadSprite("paper", "./assets/paper.webp");
-  k.loadSprite("scissors", "./assets/scissors.webp");
-  k.loadSprite("fish-icon", "./assets/fish.webp");
-  k.loadSprite("tank", "./assets/tank.webp");
-  k.loadSprite("quit-btn", "./assets/quit.webp");
-  k.loadSprite("home-btn", "./assets/home.png");
-
-  console.log("[Sprites] Minigame assets loaded");
-}
+// Minigame sprite assets (rock/paper/scissors webps, tank, home, etc.)
+// are not loaded because they are unused in game code and several
+// exceed Kaboom's 2048x2048 texture atlas limit (home.png is 2726x1446).
 
 // ========== 辅助函数 ==========
 // 获取随机装饰物
