@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kaboom RPG 冒险游戏</title>
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
@@ -168,6 +169,13 @@
       display: none;
     }
 
+    #game-logo {
+      width: 160px;
+      height: 160px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 20px rgba(129, 140, 248, 0.5));
+    }
+
     #game-title {
       color: #818cf8;
       font-size: 36px;
@@ -258,6 +266,7 @@
 
     <!-- 开始界面 -->
     <div id="start-screen">
+      <img id="game-logo" src="/logo.svg" alt="Kaboom RPG Adventure">
       <h1 id="game-title">PIXEL<br>ADVENTURE</h1>
       <button id="start-button">开始游戏</button>
       <p id="start-hint">点击按钮或按空格键开始</p>
