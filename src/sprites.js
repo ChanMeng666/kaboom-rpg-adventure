@@ -816,10 +816,8 @@ export async function loadMiCasaAssets() {
     sliceY: INTERIOR_TILESETS.smallItems.sliceY,
   });
 
-  k.loadSprite("mc-interiors-free", INTERIOR_TILESETS.interiorsFree.path, {
-    sliceX: INTERIOR_TILESETS.interiorsFree.sliceX,
-    sliceY: INTERIOR_TILESETS.interiorsFree.sliceY,
-  });
+  // Note: mc-interiors-free (Interiors_free_16x16.png) is not loaded because
+  // its 1424 tiles overflow Kaboom's 2048x2048 texture atlas limit.
 
   console.log("[Sprites] Interior tilesets loaded");
 
