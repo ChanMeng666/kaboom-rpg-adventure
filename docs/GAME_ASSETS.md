@@ -17,15 +17,16 @@ public/
 │   ├── tank.webp            # 钓鱼小游戏 - 鱼缸背景
 │   ├── quit.webp            # UI - 退出按钮
 │   └── home.png             # UI - 主页按钮
-└── mi-casa/                  # Mi-Casa 风格资源
-    ├── monogram.ttf                      # 像素风格字体
-    ├── Itty_Bitty_6_Walk_sprites.png     # 角色精灵表 (240×128px)
-    ├── TopDownHouse_FloorsAndWalls.png   # 地板墙壁 (288×144px)
-    ├── TopDownHouse_DoorsAndWindows.png  # 门窗 (288×160px)
-    ├── TopDownHouse_FurnitureState1.png  # 家具状态1 (208×288px)
-    ├── TopDownHouse_FurnitureState2.png  # 家具状态2 (208×288px)
-    ├── TopDownHouse_SmallItems.png       # 小物品 (208×288px)
-    └── Interiors_free_16x16.png          # 室内装饰集 (256×1424px)
+└── tilesets/
+    └── interior/              # 室内场景资源 (Mi-Casa 风格)
+        ├── monogram.ttf                      # 像素风格字体
+        ├── Itty_Bitty_6_Walk_sprites.png     # 角色精灵表 (240×128px)
+        ├── TopDownHouse_FloorsAndWalls.png   # 地板墙壁 (288×144px)
+        ├── TopDownHouse_DoorsAndWindows.png  # 门窗 (288×160px)
+        ├── TopDownHouse_FurnitureState1.png  # 家具状态1 (208×288px)
+        ├── TopDownHouse_FurnitureState2.png  # 家具状态2 (208×288px)
+        ├── TopDownHouse_SmallItems.png       # 小物品 (208×288px)
+        └── Interiors_free_16x16.png          # 室内装饰集 (256×1424px)
 ```
 
 ---
@@ -205,7 +206,7 @@ ANIMATIONS = {
 
 ### 2.1 角色精灵表
 
-**文件**: `public/mi-casa/Itty_Bitty_6_Walk_sprites.png`  
+**文件**: `public/tilesets/interior/Itty_Bitty_6_Walk_sprites.png`  
 **精灵名**: `mi-casa-chars`  
 **规格**: 240×128px = 15列 × 8行 = 120帧 (每个16×16px)
 
@@ -227,7 +228,7 @@ ANIMATIONS = {
 
 ### 2.2 地板墙壁 Tileset
 
-**文件**: `public/mi-casa/TopDownHouse_FloorsAndWalls.png`  
+**文件**: `public/tilesets/interior/TopDownHouse_FloorsAndWalls.png`  
 **精灵名**: `mc-floors-walls`  
 **规格**: 288×144px = 18列 × 9行 = 162帧
 
@@ -247,7 +248,7 @@ ANIMATIONS = {
 
 ### 2.3 门窗 Tileset
 
-**文件**: `public/mi-casa/TopDownHouse_DoorsAndWindows.png`  
+**文件**: `public/tilesets/interior/TopDownHouse_DoorsAndWindows.png`  
 **精灵名**: `mc-doors-windows`  
 **规格**: 288×160px = 18列 × 10行 = 180帧
 
@@ -268,7 +269,7 @@ ANIMATIONS = {
 
 ### 2.4 家具 Tileset (状态1)
 
-**文件**: `public/mi-casa/TopDownHouse_FurnitureState1.png`  
+**文件**: `public/tilesets/interior/TopDownHouse_FurnitureState1.png`  
 **精灵名**: `mc-furniture1`  
 **规格**: 208×288px = 13列 × 18行 = 234帧
 
@@ -293,7 +294,7 @@ ANIMATIONS = {
 
 ### 2.5 家具 Tileset (状态2)
 
-**文件**: `public/mi-casa/TopDownHouse_FurnitureState2.png`  
+**文件**: `public/tilesets/interior/TopDownHouse_FurnitureState2.png`  
 **精灵名**: `mc-furniture2`  
 **规格**: 同状态1
 
@@ -303,7 +304,7 @@ ANIMATIONS = {
 
 ### 2.6 小物品 Tileset
 
-**文件**: `public/mi-casa/TopDownHouse_SmallItems.png`  
+**文件**: `public/tilesets/interior/TopDownHouse_SmallItems.png`  
 **精灵名**: `mc-small-items`  
 **规格**: 208×288px = 13列 × 18行 = 234帧
 
@@ -324,7 +325,7 @@ ANIMATIONS = {
 
 ### 2.7 大型室内装饰集
 
-**文件**: `public/mi-casa/Interiors_free_16x16.png`  
+**文件**: `public/tilesets/interior/Interiors_free_16x16.png`  
 **精灵名**: `mc-interiors-free`  
 **规格**: 256×1424px = 16列 × 89行 = 1424帧
 
@@ -334,12 +335,12 @@ ANIMATIONS = {
 
 ### 2.8 像素字体
 
-**文件**: `public/mi-casa/monogram.ttf`  
+**文件**: `public/tilesets/interior/monogram.ttf`  
 **字体名**: `monogram`
 
 用法示例：
 ```javascript
-k.loadFont("monogram", "./mi-casa/monogram.ttf");
+k.loadFont("monogram", "./tilesets/interior/monogram.ttf");
 // 使用
 k.text("Hello World", { font: "monogram", size: 16 });
 ```
@@ -505,4 +506,4 @@ export const INTERIOR_MAPS = {
 
 ---
 
-*文档最后更新: 2026-02-01*
+*文档最后更新: 2026-04-09*
