@@ -1,0 +1,59 @@
+{
+  "project": "kaboom-rpg-adventure",
+  "baseUrl": "https://chanmeng666.github.io/kaboom-rpg-adventure/",
+  "outDir": "docs/showcase",
+  "loginWall": false,
+
+  "viewports": {
+    "desktop": { "width": 1280, "height": 720, "deviceScaleFactor": 2 },
+    "mobile":  { "width": 390,  "height": 844,  "deviceScaleFactor": 3, "isMobile": true }
+  },
+
+  "reducedMotion": "no-preference",
+
+  "pages": [
+    {
+      "label": "hero",
+      "url": "./",
+      "viewport": "desktop",
+      "fullPage": false,
+      "before": [
+        { "action": "wait", "ms": 2000 }
+      ]
+    },
+    {
+      "label": "gameplay-world",
+      "url": "./",
+      "viewport": "desktop",
+      "fullPage": false,
+      "before": [
+        { "action": "wait", "ms": 2000 },
+        { "action": "evaluate", "script": "document.getElementById('start-button').click()" },
+        { "action": "wait", "ms": 4000 }
+      ]
+    },
+    {
+      "label": "mobile",
+      "url": "./",
+      "viewport": "mobile",
+      "fullPage": false,
+      "before": [
+        { "action": "wait", "ms": 2000 }
+      ]
+    }
+  ],
+
+  "demo": {
+    "size": { "width": 1280, "height": 720 },
+    "stepPauseMs": 800,
+    "steps": [
+      { "action": "goto", "url": "./" },
+      { "action": "wait", "ms": 2000 },
+      { "action": "evaluate", "script": "document.getElementById('start-button').click()" },
+      { "action": "wait", "ms": 5000 },
+      { "action": "wait", "ms": 3000 },
+      { "action": "wait", "ms": 3000 },
+      { "action": "wait", "ms": 3000 }
+    ]
+  }
+}
